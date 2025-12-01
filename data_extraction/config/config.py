@@ -1,3 +1,11 @@
+from pathlib import Path
+import os
+from dotenv import load_dotenv
+
+project_root = Path(__file__).parent.parent.parent
+env_path = project_root / ".env"
+load_dotenv(dotenv_path=env_path, override=True)
+
 # CHECKBOX SELECTIONS
 LTAP_CHECKBOX_SELECTIONS = [
     (5, [0, 1, 2, 5, 6, 7]),
@@ -73,5 +81,21 @@ ENCODING = 1100
 MAX_RETRIES = 10
 WAIT_SECONDS = 2
 
+def get_output_path() -> str:
+    env_path = os.getenv("PATH_TO_DATA")
+    if env_path:
+        path = Path(env_path)
+    else:
+        path = project_root / "data_extraction" / "data"
+
+    path.mkdir(parents=True, exist_ok=True)
+
+    path_str = str(path.resolve()).replace("\\", "/")
+
+    if not path_str.endswith("/"):
+        path_str += "/"
+
+    return path_str
+
 # OUTPUT PATH
-OUTPUT_PATH = 'C:/Users/buterl2/OneDrive - Medtronic PLC/Desktop/newDash/data_extraction/data/'
+OUTPUT_PATH = get_output_path()
