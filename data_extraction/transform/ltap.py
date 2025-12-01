@@ -18,7 +18,6 @@ def retrieve_deliveries():
     df["delivery"] = df["delivery"].fillna(0).astype(int)
     deliveries_df = df["delivery"].drop_duplicates()
     deliveries_df.to_csv(f"{config.OUTPUT_PATH}deliveries.csv", index=False)
-    logger.info("Deliveries were successfully extracted")
 
 FLOOR_MAPPING = {area: floor for floor, areas in config.FLOORS.items() for area in areas}
 
@@ -40,7 +39,6 @@ def load_and_combine_data():
     combined = pd.concat([hu_to_link, huto_lnkhis], ignore_index=True)
     combined = combined.merge(routes, on="route", how="left")
     combined = combined.drop_duplicates(subset="document", keep="first")
-    logger.info("HU-TO-LINK and ROUTES files were combined successfully")
     return combined
 
 def prepare_ltap_data(combined):
@@ -62,8 +60,6 @@ def prepare_ltap_data(combined):
     ltap["flow"] = ltap["flow"].replace("y2", "a_flow")
     ltap["floor"] = ltap["picking_area"].map(FLOOR_MAPPING)
     ltap["hour"] = ltap["confirmation_time"].str.slice(0, 2)
-
-    logger.info("LTAP data successfully prepared")
 
     return ltap
 
@@ -90,8 +86,6 @@ def calculate_hourly_productivity(ltap):
             "count": int(count),
             "productivity_color": color
         }
-
-    logger.info("Hourly productivity (LTAP) calculated successfully")
     
     return nested_dict, total_hours
 
@@ -121,8 +115,6 @@ def calculate_aggregate_metrics(ltap, nested_dict, total_hours, lines_per_user):
         nested_dict[user][floor][flow]["items_picked"] = int(items_picked)
         nested_dict[user][floor][flow]["lines_picked"] = int(lines_picked)
         nested_dict[user][floor][flow]["ratio"] = round(ratio, 2)
-
-    logger.info("Aggregate metrics (LTAP) calculated successfully")
 
 def transform_ltap():
     # LOAD AND COMBINE SUPPORTING DATA

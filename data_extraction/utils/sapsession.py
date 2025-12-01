@@ -8,7 +8,6 @@ class SAPSession():
         application = sap_gui.GetScriptingEngine
         self.connection = application.Children(connection)
         self.session = self.connection.Children(session)
-        logger.info(f"Connected successfully to connection: {connection} and session: {session}")
     
     def __getattr__(self, name):
         return getattr(self.session, name)
@@ -16,7 +15,6 @@ class SAPSession():
     def enter_table(self, table_name):
         self.findById("wnd[0]/usr/ctxtP_TAB").text = table_name
         self.findById("wnd[0]/tbar[1]/btn[8]").press()
-        logger.info(f"{table_name} successfully started")
     
     def checkbox_selection(self, selection):
         self.findById("wnd[0]/mbar/menu[3]/menu[2]").select()
@@ -29,7 +27,6 @@ class SAPSession():
             for col in checkbox_column:
                 self.findById(f"wnd[1]/usr/chk[2,{col}]").selected = True
         self.findById("wnd[1]/tbar[0]/btn[0]").press()
-        logger.info("Fields selection successfully done")
 
     def save_to_folder(self, filename):
         self.findById("wnd[0]/tbar[1]/btn[45]").press()
@@ -41,4 +38,3 @@ class SAPSession():
         self.findById("wnd[1]/usr/ctxtDY_FILE_ENCODING").text = config.ENCODING
         self.findById("wnd[1]/usr/ctxtDY_FILENAME").caretPosition = 8
         self.findById("wnd[1]/tbar[0]/btn[11]").press()
-        logger.info(f"{filename} successfully saved")

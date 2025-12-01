@@ -6,5 +6,4 @@ def transform_routes():
     # CONVERT 
     df = pd.read_excel(f"{config.OUTPUT_PATH}routes.xlsx")
     df.to_csv(f"{config.OUTPUT_PATH}routes.csv", index=False)
-    logger.info("Routes file was succesfully transformed into a CSV file")
     

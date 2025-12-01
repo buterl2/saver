@@ -6,5 +6,4 @@ def rename(filename, mapping):
     df = pd.read_csv(f"{config.OUTPUT_PATH}{filename}.csv")
     df = df.rename(columns=mapping)
     df.to_csv(f"{config.OUTPUT_PATH}{filename}.csv", index=False)
-    logger.info(f"Columns were renamed successfully in {filename}")
     

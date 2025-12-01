@@ -1,11 +1,15 @@
 import os
+from pathlib import Path
 from dotenv import load_dotenv
 
-load_dotenv()
+# Get the project root directory (parent of server directory)
+project_root = Path(__file__).parent.parent
+env_path = project_root / '.env'
+load_dotenv(dotenv_path=env_path, override=True)
 
 class Settings:
     # Data folder configuration
-    path_to_data = os.getenv("PATH_TO_DATA", "C:/Users/buterl2/OneDrive - Medtronic PLC/Desktop/newDash/data_extraction/data")
+    path_to_data = os.getenv("PATH_TO_DATA", "")
 
     # CORS configuration
     _cors_origins_str = os.getenv("CORS_ORIGINS", "*")

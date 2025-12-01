@@ -29,7 +29,6 @@ def load_and_combine_data():
     combined = cdhdr_df.merge(users, on="user", how="left")
     combined = combined.drop_duplicates(subset="object_value", keep="first")
 
-    logger.info("CDHDR and USERS files were combined successfully")
     return combined
 
 def prepare_cdhdr_data(combined):
@@ -41,8 +40,6 @@ def prepare_cdhdr_data(combined):
     combined["datetime"] += pd.DateOffset(hours=1)
     combined["hour"] = combined["datetime"].dt.strftime("%H")
     combined = combined.drop(columns="datetime")
-
-    logger.info("CDHDR data successfully prepared")
 
     return combined
 
@@ -70,8 +67,6 @@ def calculate_hourly_productivity(cdhdr_df):
             "count": int(count),
             "productivity_color": color
         }
-    
-    logger.info("Hourly productivity (CDHDR) calculated successfully")
 
     return nested_dict, total_hours
 
@@ -89,8 +84,6 @@ def calculate_aggregate_metrics(nested_dict, total_hours, packing_per_user):
         nested_dict[user][floor]["productivity"] = round(productivity, 2)
         nested_dict[user][floor]["productivity_color"] = color
         nested_dict[user][floor]["boxes_packed"] = int(boxes_packed)
-
-    logger.info("Aggregate metrics (CDHDR) calculated successfully")
 
 def transform_cdhdr():
     # LOAD AND COMBINE DATA
