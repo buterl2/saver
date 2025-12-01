@@ -45,7 +45,7 @@ class WatchFiles:
             try:
                 if not os.path.exists(file_path):
                     if file_type == "json":
-                        logger.warning(f"File does not exists: {file_path}, returning empty dict")
+                        logger.warning(f"File does not exist: {file_path}, returning empty dict")
                         return {}
                     return None
 

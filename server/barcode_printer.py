@@ -29,7 +29,7 @@ def print_barcode(username, password, printer_name):
     # VALIDATE PRINTER NAME EXISTS
     printers_ip = settings.printers_ip
     if printer_name not in printers_ip:
-        error_msg = f'Invalid printer name: {printer_name}. Available printers: {list[str](printers_ip.keys())}'
+        error_msg = f'Invalid printer name: {printer_name}. Available printers: {list(printers_ip.keys())}'
         logger.error(error_msg)
         return False, error_msg
 
