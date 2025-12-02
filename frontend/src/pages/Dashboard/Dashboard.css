@@ -1,0 +1,30 @@
+.App {
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(20deg, #0a082e, #0e0c3b, #07025f, #070441);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.title {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 4rem;
+  color: #ebe9ff;
+  margin: 0;
+}
+
+.content {
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+}
+

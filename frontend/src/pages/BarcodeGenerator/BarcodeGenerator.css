@@ -1,0 +1,98 @@
+.page-title {
+  color: white;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.barcode-form-container {
+  max-width: 500px;
+  margin: 50px auto;
+  padding: 30px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.barcode-form-field {
+  margin-bottom: 20px;
+}
+
+.barcode-form-label {
+  display: block;
+  margin-bottom: 10px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.9rem;
+  color: #ebe9ff;
+}
+
+.barcode-form-input,
+.barcode-form-select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  background: transparent;
+  color: white;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+.barcode-form-input:focus,
+.barcode-form-select:focus {
+  outline: none;
+  border-color: #ebe9ff;
+}
+
+.barcode-form-select {
+  background: rgba(7, 4, 65, 0.8);
+  cursor: pointer;
+}
+
+.barcode-form-button {
+  width: 100%;
+  padding: 15px;
+  background: transparent;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  color: white;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.barcode-form-button:hover:not(.loading) {
+  background: #ebe9ff;
+  border-color: #ebe9ff;
+  color: black;
+}
+
+.barcode-form-button.loading {
+  background: rgba(255, 255, 255, 0.1);
+  cursor: not-allowed;
+}
+
+.barcode-message {
+  margin-top: 20px;
+  padding: 10px;
+  border-radius: 8px;
+  text-align: center;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.9rem;
+  color: #ebe9ff;
+}
+
+.barcode-message.success {
+  background: rgba(34, 197, 94, 0.2);
+  border: 1px solid rgba(34, 197, 94, 0.5);
+}
+
+.barcode-message.error {
+  background: rgba(220, 38, 38, 0.2);
+  border: 1px solid rgba(220, 38, 38, 0.5);
+}
+

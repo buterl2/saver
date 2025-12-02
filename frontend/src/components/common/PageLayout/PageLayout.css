@@ -1,0 +1,21 @@
+.page {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: white;
+  background: linear-gradient(20deg, #0a082e, #0e0c3b, #07025f, #070441);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.page-content {
+  z-index: 10;
+  width: 98%;
+  max-width: 100%;
+  padding: 10px;
+  margin-top: 70px;
+  margin-bottom: 30px;
+}
+

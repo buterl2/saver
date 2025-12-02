@@ -1,0 +1,30 @@
+.back-button {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: transparent;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  padding: 8px 10px;
+  border-radius: 8px;
+  color: #ebe9ff;
+  text-decoration: none;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  transition: all 0.6s ease;
+  z-index: 100;
+  font-size: 0.9rem;
+}
+
+.back-button:hover {
+  background: #ebe9ff;
+  border-color: #ebe9ff;
+  color: black;
+}
+
+.back-button svg {
+  font-size: 0.8rem;
+}
+

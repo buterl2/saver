@@ -1,0 +1,72 @@
+.page-title {
+  color: white;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.data-users-container {
+  max-width: 800px;
+  margin: 0 auto;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.data-users-list {
+  margin-bottom: 20px;
+}
+
+.data-users-item {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  margin-bottom: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  gap: 20px;
+}
+
+.data-users-label {
+  min-width: 150px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  color: #ebe9ff;
+}
+
+.data-users-input {
+  flex: 1;
+  padding: 8px;
+  border-radius: 6px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  background: transparent;
+  color: white;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.data-users-input:focus {
+  outline: none;
+  border-color: #ebe9ff;
+}
+
+.data-users-save-button {
+  width: 100%;
+  padding: 15px;
+  background: transparent;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  color: white;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.data-users-save-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+

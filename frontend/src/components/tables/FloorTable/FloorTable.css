@@ -1,0 +1,109 @@
+.floor-table-container {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 10px;
+  margin: 10px 0;
+  max-width: 100%;
+}
+
+.floor-title {
+  color: #ebe9ff;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1rem;
+  margin: 0 0 8px 0;
+  font-weight: 600;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.floor-table {
+  width: 100%;
+  border-collapse: collapse;
+  color: #ebe9ff;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.65rem;
+  table-layout: fixed;
+}
+
+.floor-table th {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 8px 12px;
+  font-weight: 600;
+  color: #ebe9ff;
+  font-size: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  white-space: nowrap;
+}
+
+.floor-table td {
+  padding: 6px 4px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: center;
+  font-size: 0.7rem;
+  color: #ebe9ff;
+}
+
+.floor-table th:first-child,
+.floor-table td:first-child {
+  width: 4%;
+  text-align: right;
+  font-weight: 500;
+  color: #ebe9ff;
+}
+
+.floor-table th:nth-child(2),
+.floor-table td:nth-child(2) {
+  width: 8%;
+  text-align: left;
+  font-weight: 500;
+  color: #ebe9ff;
+}
+
+/* Hour columns (17 hours) - each gets equal share of remaining space */
+.floor-table th:nth-child(n+3):nth-child(-n+19),
+.floor-table td:nth-child(n+3):nth-child(-n+19) {
+  width: 2.2%;
+  padding: 4px 2px;
+}
+
+/* Total column */
+.floor-table th:nth-child(20),
+.floor-table td:nth-child(20) {
+  width: 4%;
+}
+
+/* Items Picked (picking only) */
+.floor-table th:nth-child(21),
+.floor-table td:nth-child(21) {
+  width: 4%;
+}
+
+/* Ratio (picking only) */
+.floor-table th:nth-child(22),
+.floor-table td:nth-child(22) {
+  width: 3.5%;
+}
+
+/* Hours Worked */
+.floor-table th:nth-child(23),
+.floor-table td:nth-child(23),
+.floor-table th:nth-child(21),
+.floor-table td:nth-child(21) {
+  width: 4%;
+}
+
+/* Productivity */
+.floor-table th:nth-child(24),
+.floor-table td:nth-child(24),
+.floor-table th:nth-child(22),
+.floor-table td:nth-child(22) {
+  width: 4%;
+}
+
+.floor-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
