@@ -1,8 +1,20 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './PasswordAuth.css';
 
 function PasswordAuth({ correctPassword, onAuthenticated, title = 'Authentication Required' }) {
   const [password, setPassword] = useState('');
+
+  useEffect(() => {
+    // Prevent scrolling when password auth is shown
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
+    
+    return () => {
+      // Restore scrolling when component unmounts
+      document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+    };
+  }, []);
 
   const handlePasswordSubmit = (e) => {
     e.preventDefault();
@@ -17,7 +29,6 @@ function PasswordAuth({ correctPassword, onAuthenticated, title = 'Authenticatio
 
   return (
     <div className="password-auth-container">
-      <h1 className="page-title">{title}</h1>
       <div className="password-auth-form-wrapper">
         <form onSubmit={handlePasswordSubmit}>
           <div className="password-auth-field">
