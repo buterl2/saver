@@ -1,0 +1,80 @@
+.bflow-dashboard-container {
+  width: 100%;
+  padding: 20px;
+}
+
+.bflow-columns {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+  max-width: 100%;
+}
+
+.bflow-column {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.bflow-column-title {
+  color: #ebe9ff;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 0 0 20px 0;
+  text-align: center;
+}
+
+.bflow-metrics {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 15px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+}
+
+.bflow-metric {
+  color: #ebe9ff;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.bflow-chart-container {
+  flex: 1;
+  min-height: 200px;
+  width: 100%;
+  position: relative;
+}
+
+.bflow-chart-container svg {
+  overflow: visible;
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 1200px) {
+  .bflow-columns {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .bflow-dashboard-container {
+    padding: 10px;
+  }
+
+  .bflow-column {
+    padding: 15px;
+  }
+
+  .bflow-column-title {
+    font-size: 1rem;
+  }
+}
+

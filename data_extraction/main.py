@@ -8,6 +8,12 @@ from data_extraction.transform.hutolink import hu_to_link, huto_lnkhis
 from data_extraction.transform.cdhdr import transform_cdhdr, cdhdr
 from data_extraction.utils.keep_alive import keep_alive
 from data_extraction.utils.retry import retry
+from data_extraction.extract.vl06f import extract_vl06f
+from data_extraction.transform.vl06f import vl06f
+from data_extraction.extract.likp import extract_likp
+from data_extraction.transform.likp import likp
+from data_extraction.extract.hutolink_dashboard import hutolink_dashboard
+from data_extraction.transform.hutolink_dashboard import hutolink_dashboard_transform
 
 if __name__ == "__main__":
     while True:
@@ -27,5 +33,11 @@ if __name__ == "__main__":
             retry(transform_ltap)
             retry(cdhdr)
             retry(transform_cdhdr)
+            retry(extract_vl06f)
+            retry(extract_likp)
+            retry(likp)
+            retry(vl06f)
+            retry(hutolink_dashboard)
+            retry(hutolink_dashboard_transform)
         else:
             retry(keep_alive)

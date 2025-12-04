@@ -7,5 +7,11 @@ export const API_ENDPOINTS = {
   PACKING_DATA: '/data_cdhdr',
   USERS_NAMES: '/users_names',
   BARCODE: '/barcode',
+  DELIVERIES_PAST: '/data_deliveries_past',
+  DELIVERIES_TODAY: '/data_deliveries_today',
+  DELIVERIES_FUTURE: '/data_deliveries_future',
+  HU_PAST: '/data_hu_past',
+  HU_TODAY: '/data_hu_today',
+  HU_FUTURE: '/data_hu_future',
 };
 

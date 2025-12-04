@@ -46,6 +46,56 @@ CDHDR_DF = {
     'Time': 'time',
     'TCode': 'transaction_code'
 }
+VL06F_DF = {
+    'GI Time': 'gi_time',
+    'No.Pk': 'no_pk',
+    'Delivery': 'delivery',
+    'Handling Unit': 'hu',
+    'DPrio': 'delivery_priority',
+    'WM': 'wm',
+    'ShPt': 'shipping_point',
+    'Sold-to party locat.': 'sold_to_party_location',
+    'Created By': 'created_by',
+    'GI Date': 'gi_date',
+    'Counter': 'counter',
+    'Created On': 'created_on',
+    'Time': 'time',
+    'Ctr': 'country',
+    'Route': 'route',
+    'SC': 'shipping_condition'
+}
+
+LIKP_DF = {
+    'Delivery': 'delivery'
+}
+
+HU_TO_LINK_DASHBOARD_DF = {
+    ' TO Number': 'to_number',
+    'TO Number': 'to_number',
+    'Transfer order item quantity': 'to_quantity',
+    'Handling Unit': 'hu'
+}
+
+LTAP_DASHBOARD_DF = {
+    'Source Bin': 'source_bin',
+    'Conf.dt.': 'confirmation_date',
+    'Actual qty': 'actual_qty',
+    ' Actual qty': 'actual_qty',
+    'User': 'user',
+    'PAr': 'picking_area',
+    'Material Description': 'material_description',
+    'Conf.t.': 'confirmation_time',
+    'Material': 'material',
+    'Dest. Bin': 'destination_bin',
+    'Delivery': 'delivery',
+    'Batch': 'batch',
+    ' TO Number': 'to_number',
+    'TO Number': 'to_number'
+}
+
+HU_TO_LINK_LIKP_DASHBOARD_DF = {
+    'Handling Unit': 'hu'
+}
 
 # MISCS
 FLOORS = {
@@ -80,6 +130,8 @@ WAREHOUSE = 266
 ENCODING = 1100
 MAX_RETRIES = 10
 WAIT_SECONDS = 2
+VARIANT_USER = 'siharm2'
+VARIANT_NAME = 'MAC'
 
 def get_output_path() -> str:
     env_path = os.getenv("PATH_TO_DATA")

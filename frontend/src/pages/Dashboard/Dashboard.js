@@ -2,6 +2,7 @@ import DashboardButton from '../../components/dashboard/DashboardButton/Dashboar
 import ParticleBackground from '../../components/dashboard/ParticleBackground/ParticleBackground';
 import { TbChartLine } from 'react-icons/tb';
 import { TbBox } from 'react-icons/tb';
+import { TbChartBar } from 'react-icons/tb';
 import { TbBarcode } from 'react-icons/tb';
 import './Dashboard.css';
 
@@ -21,6 +22,11 @@ function Dashboard() {
             text='Packing Monitor'
             icon={<TbBox />}
             path='/packing'
+          />
+          <DashboardButton
+            text='B-Flow Dashboard'
+            icon={<TbChartBar />}
+            path='/bflow'
           />
           <DashboardButton
             text='Barcode Generator'

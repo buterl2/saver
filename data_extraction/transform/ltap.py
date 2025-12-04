@@ -3,7 +3,6 @@ from data_extraction.utils.rename import rename
 import data_extraction.config.config as config
 import pandas as pd
 from collections import defaultdict
-from data_extraction.utils import default_logger as logger
 
 def retrieve_deliveries():
     # CONVERT

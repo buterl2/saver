@@ -38,3 +38,24 @@ class SAPSession():
         self.findById("wnd[1]/usr/ctxtDY_FILE_ENCODING").text = config.ENCODING
         self.findById("wnd[1]/usr/ctxtDY_FILENAME").caretPosition = 8
         self.findById("wnd[1]/tbar[0]/btn[11]").press()
+
+    def get_variant_user(self, variant_name):
+        self.findById("wnd[0]/tbar[1]/btn[17]").press()
+        self.findById("wnd[1]/usr/txtENAME-LOW").text = variant_name
+        self.findById("wnd[1]/usr/txtENAME-LOW").caretPosition = 7
+        self.findById("wnd[1]/tbar[0]/btn[8]").press()
+        self.findById("wnd[1]/usr/cntlALV_CONTAINER_1/shellcont/shell").selectedRows = "0"
+        self.findById("wnd[1]/usr/cntlALV_CONTAINER_1/shellcont/shell").doubleClickCurrentCell()
+        self.findById("wnd[0]/usr/ctxtIT_WADAT-LOW").setFocus()
+        self.findById("wnd[0]/usr/ctxtIT_WADAT-LOW").caretPosition = 5
+        self.findById("wnd[0]/usr/btn%_IT_WADAT_%_APP_%-VALU_PUSH").press()
+        self.findById("wnd[1]/tbar[0]/btn[16]").press()
+        self.findById("wnd[1]/tbar[0]/btn[8]").press()
+
+    def get_variant_name(self, variant_name):
+        self.findById("wnd[0]/tbar[1]/btn[17]").press()
+        self.findById("wnd[1]/usr/txtV-LOW").text = variant_name
+        self.findById("wnd[1]/usr/txtENAME-LOW").text = ""
+        self.findById("wnd[1]/usr/txtV-LOW").caretPosition = 3
+        self.findById("wnd[1]/tbar[0]/btn[8]").press()
+    

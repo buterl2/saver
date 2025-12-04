@@ -70,3 +70,45 @@ export const printBarcode = async (data) => {
   });
 };
 
+/**
+ * Fetch deliveries past data
+ */
+export const fetchDeliveriesPast = async () => {
+  return apiFetch(API_ENDPOINTS.DELIVERIES_PAST);
+};
+
+/**
+ * Fetch deliveries today data
+ */
+export const fetchDeliveriesToday = async () => {
+  return apiFetch(API_ENDPOINTS.DELIVERIES_TODAY);
+};
+
+/**
+ * Fetch deliveries future data
+ */
+export const fetchDeliveriesFuture = async () => {
+  return apiFetch(API_ENDPOINTS.DELIVERIES_FUTURE);
+};
+
+/**
+ * Fetch HU past data
+ */
+export const fetchHuPast = async () => {
+  return apiFetch(API_ENDPOINTS.HU_PAST);
+};
+
+/**
+ * Fetch HU today data
+ */
+export const fetchHuToday = async () => {
+  return apiFetch(API_ENDPOINTS.HU_TODAY);
+};
+
+/**
+ * Fetch HU future data
+ */
+export const fetchHuFuture = async () => {
+  return apiFetch(API_ENDPOINTS.HU_FUTURE);
+};
+
