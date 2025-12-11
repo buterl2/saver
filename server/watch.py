@@ -23,34 +23,25 @@ class WatchFiles:
         # SET UP FILE PATHS
         self.cdhdr_data_path = os.path.join(self.data_folder_path, "total_per_floor_packs_per_hour.json")
         self.ltap_data_path = os.path.join(self.data_folder_path, "total_per_floor_per_flow_picks_per_hour.json")
-        self.deliveries_past_data_path = os.path.join(self.data_folder_path, "deliveries_past.json")
-        self.deliveries_today_data_path = os.path.join(self.data_folder_path, "deliveries_today.json")
-        self.deliveries_future_data_path = os.path.join(self.data_folder_path, "deliveries_future.json")
-        self.hu_past_data_path = os.path.join(self.data_folder_path, "hu_past.json")
-        self.hu_today_data_path = os.path.join(self.data_folder_path, "hu_today.json")
-        self.hu_future_data_path = os.path.join(self.data_folder_path, "hu_future.json")
+        self.deliveries_dashboard_data_path = os.path.join(self.data_folder_path, "deliveries_all_floors.json")
+        self.hu_dashboard_data_path = os.path.join(self.data_folder_path, "hu_all_floors.json")
+        self.lines_dashboard_data_path = os.path.join(self.data_folder_path, "lines_all_floors.json")
         self.users_name_path = os.path.join(self.data_folder_path, "users_name.csv")
 
         # INITIALIZE DATA STORAGE
         self.users_name = {}
         self.cdhdr_data = {}
         self.ltap_data = {}
-        self.deliveries_past_data = {}
-        self.deliveries_today_data = {}
-        self.deliveries_future_data = {}
-        self.hu_past_data = {}
-        self.hu_today_data = {}
-        self.hu_future_data = {}
+        self.deliveries_dashboard_data = {}
+        self.hu_dashboard_data = {}
+        self.lines_dashboard_data = {}
 
         # LOAD INITIAL DATA
         self.load_cdhdr()
         self.load_ltap()
-        self.load_deliveries_past()
-        self.load_deliveries_today()
-        self.load_deliveries_future()
-        self.load_hu_past()
-        self.load_hu_today()
-        self.load_hu_future()
+        self.load_deliveries_dashboard()
+        self.load_hu_dashboard()
+        self.load_lines_dashboard()
         self.load_users_name()
 
         logger.info("WatchFiles initialized successfully")
@@ -129,35 +120,20 @@ class WatchFiles:
         self.ltap_data = self._load_json_file(self.ltap_data_path, {})
         logger.info(f"LTAP data loaded {len(self.ltap_data)} entries")
 
-    def load_deliveries_past(self):
-        logger.info(f"Loading DELIVERIES PAST data from {self.deliveries_past_data_path}")
-        self.deliveries_past_data = self._load_json_file(self.deliveries_past_data_path, {})
-        logger.info(f"DELIVERIES PAST data loaded {len(self.deliveries_past_data)} entries")
+    def load_deliveries_dashboard(self):
+        logger.info(f"Loading DELIVERIES DASHBOARD data from {self.deliveries_dashboard_data_path}")
+        self.deliveries_dashboard_data = self._load_json_file(self.deliveries_dashboard_data_path, {})
+        logger.info(f"DELIVERIES DASHBOARD data loaded {len(self.deliveries_dashboard_data)} entries")
 
-    def load_deliveries_today(self):
-        logger.info(f"Loading DELIVERIES TODAY data from {self.deliveries_today_data_path}")
-        self.deliveries_today_data = self._load_json_file(self.deliveries_today_data_path, {})
-        logger.info(f"DELIVERIES TODAY data loaded {len(self.deliveries_today_data)} entries")
+    def load_hu_dashboard(self):
+        logger.info(f"Loading HU DASHBOARD data from {self.hu_dashboard_data_path}")
+        self.hu_dashboard_data = self._load_json_file(self.hu_dashboard_data_path, {})
+        logger.info(f"HU DASHBOARD data loaded {len(self.hu_dashboard_data)} entries")
 
-    def load_deliveries_future(self):
-        logger.info(f"Loading DELIVERIES FUTURE data from {self.deliveries_future_data_path}")
-        self.deliveries_future_data = self._load_json_file(self.deliveries_future_data_path, {})
-        logger.info(f"DELIVERIES FUTURE data loaded {len(self.deliveries_future_data)} entries")
-
-    def load_hu_past(self):
-        logger.info(f"Loading HU PAST data from {self.hu_past_data_path}")
-        self.hu_past_data = self._load_json_file(self.hu_past_data_path, {})
-        logger.info(f"HU PAST data loaded {len(self.hu_past_data)} entries")
-
-    def load_hu_today(self):
-        logger.info(f"Loading HU TODAY data from {self.hu_today_data_path}")
-        self.hu_today_data = self._load_json_file(self.hu_today_data_path, {})
-        logger.info(f"HU TODAY data loaded {len(self.hu_today_data)} entries")
-
-    def load_hu_future(self):
-        logger.info(f"Loading HU FUTURE data from {self.hu_future_data_path}")
-        self.hu_future_data = self._load_json_file(self.hu_future_data_path, {})
-        logger.info(f"HU FUTURE data loaded {len(self.hu_future_data)} entries")
+    def load_lines_dashboard(self):
+        logger.info(f"Loading LINES DASHBOARD data from {self.lines_dashboard_data_path}")
+        self.lines_dashboard_data = self._load_json_file(self.lines_dashboard_data_path, {})
+        logger.info(f"LINES DASHBOARD data loaded {len(self.lines_dashboard_data)} entries")
 
     def load_users_name(self):
         logger.info(f"Loading user names from {self.users_name_path}")
@@ -199,24 +175,15 @@ class WatchFiles:
                 elif event.src_path == self.watcher.ltap_data_path:
                     logger.info("LTAP file modified, reloading...")
                     self.watcher.load_ltap()
-                elif event.src_path == self.watcher.deliveries_past_data_path:
-                    logger.info("DELIVERIES PAST file modified, reloading...")
-                    self.watcher.load_deliveries_past()
-                elif event.src_path == self.watcher.deliveries_today_data_path:
-                    logger.info("DELIVERIES TODAY file modified, reloading...")
-                    self.watcher.load_deliveries_today()
-                elif event.src_path == self.watcher.deliveries_future_data_path:
-                    logger.info("DELIVERIES FUTURE file modified, reloading...")
-                    self.watcher.load_deliveries_future()
-                elif event.src_path == self.watcher.hu_past_data_path:
-                    logger.info("HU PAST file modified, reloading...")
-                    self.watcher.load_hu_past()
-                elif event.src_path == self.watcher.hu_today_data_path:
-                    logger.info("HU TODAY file modified, reloading...")
-                    self.watcher.load_hu_today()
-                elif event.src_path == self.watcher.hu_future_data_path:
-                    logger.info("HU FUTURE file modified, reloading...")
-                    self.watcher.load_hu_future()
+                elif event.src_path == self.watcher.deliveries_dashboard_data_path:
+                    logger.info("DELIVERIES DASHBOARD file modified, reloading...")
+                    self.watcher.load_deliveries_dashboard()
+                elif event.src_path == self.watcher.hu_dashboard_data_path:
+                    logger.info("HU DASHBOARD file modified, reloading...")
+                    self.watcher.load_hu_dashboard()
+                elif event.src_path == self.watcher.lines_dashboard_data_path:
+                    logger.info("LINES DASHBOARD file modified, reloading...")
+                    self.watcher.load_lines_dashboard()
                 elif event.src_path == self.watcher.users_name_path:
                     logger.info("User names file modified, reloading...")
                     self.watcher.load_users_name()

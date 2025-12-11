@@ -39,7 +39,7 @@ class SAPSession():
         self.findById("wnd[1]/usr/ctxtDY_FILENAME").caretPosition = 8
         self.findById("wnd[1]/tbar[0]/btn[11]").press()
 
-    def get_variant_user(self, variant_name):
+    def vl06f_dashboard(self, variant_name):
         self.findById("wnd[0]/tbar[1]/btn[17]").press()
         self.findById("wnd[1]/usr/txtENAME-LOW").text = variant_name
         self.findById("wnd[1]/usr/txtENAME-LOW").caretPosition = 7
@@ -51,6 +51,10 @@ class SAPSession():
         self.findById("wnd[0]/usr/btn%_IT_WADAT_%_APP_%-VALU_PUSH").press()
         self.findById("wnd[1]/tbar[0]/btn[16]").press()
         self.findById("wnd[1]/tbar[0]/btn[8]").press()
+        self.findById("wnd[0]/tbar[1]/btn[8]").press()
+        self.findById("wnd[0]/usr/cntlGRID1/shellcont/shell").setCurrentCell(-1,"WADAT")
+        self.findById("wnd[0]/usr/cntlGRID1/shellcont/shell").selectColumn("WADAT")
+        self.findById("wnd[0]/tbar[1]/btn[40]").press()
 
     def get_variant_name(self, variant_name):
         self.findById("wnd[0]/tbar[1]/btn[17]").press()

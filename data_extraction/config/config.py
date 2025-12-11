@@ -26,6 +26,14 @@ CDHDR_CHECKBOX_SELECTIONS = [
     (0, [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 17, 18])
 ]
 
+LIKP_CHECKBOX_SELECTIONS = [
+    (5, [0, 5, 6, 7, 10, 20]),
+    (20, []),
+    (20, []),
+    (20, [2]),
+    (20, [6])
+]
+
 # COLUMNS
 LTAP_DF = {
     'Source Bin': 'source_bin', 'Conf.dt.': 'confirmation_date', 'Actual qty': 'actual_quantity', ' Actual qty': 'actual_quantity', 
@@ -69,13 +77,6 @@ LIKP_DF = {
     'Delivery': 'delivery'
 }
 
-HU_TO_LINK_DASHBOARD_DF = {
-    ' TO Number': 'to_number',
-    'TO Number': 'to_number',
-    'Transfer order item quantity': 'to_quantity',
-    'Handling Unit': 'hu'
-}
-
 LTAP_DASHBOARD_DF = {
     'Source Bin': 'source_bin',
     'Conf.dt.': 'confirmation_date',
@@ -93,8 +94,13 @@ LTAP_DASHBOARD_DF = {
     'TO Number': 'to_number'
 }
 
-HU_TO_LINK_LIKP_DASHBOARD_DF = {
-    'Handling Unit': 'hu'
+ZORF_HUTO_LINK_DASHBOARD_DF = {
+    'Document': 'delivery',
+    'Route': 'route',
+    'TO Number': 'to_number',
+    ' TO Number': 'to_number',
+    'Handling Unit': 'hu',
+    'Source Bin': 'source_bin'
 }
 
 # MISCS
@@ -130,7 +136,7 @@ WAREHOUSE = 266
 ENCODING = 1100
 MAX_RETRIES = 10
 WAIT_SECONDS = 2
-VARIANT_USER = 'siharm2'
+VARIANT_VL06F_DASHBOARD = 'SIHARM2'
 VARIANT_NAME = 'MAC'
 
 def get_output_path() -> str:

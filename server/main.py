@@ -145,124 +145,64 @@ def get_picking_data() -> Dict[str, Any]:
         logger.error(f"Error getting picking data: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
-@app.get('/data_deliveries_past')
-def get_deliveries_past_data() -> Dict[str, Any]:
+@app.get('/data_deliveries_dashboard')
+def get_deliveries_dashboard_data() -> Dict[str, Any]:
     try:
         if watcher is None:
             raise HTTPException(status_code=503, detail="File watcher not initialized")
         
-        if not watcher.deliveries_past_data:
-            logger.warning("DELIVERIES PAST data is empty")
+        if not watcher.deliveries_dashboard_data:
+            logger.warning("DELIVERIES DASHBOARD data is empty")
             return {}
         
-        result = watcher.deliveries_past_data
-        logger.debug(f"Returning DELIVERIES PAST data: {len(result)} entries")
+        result = watcher.deliveries_dashboard_data
+        logger.debug(f"Returning DELIVERIES DASHBOARD data: {len(result)} entries")
         return result
         
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error getting deliveries past data: {e}", exc_info=True)
+        logger.error(f"Error getting deliveries dashboard data: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
-@app.get('/data_deliveries_today')
-def get_deliveries_today_data() -> Dict[str, Any]:
+@app.get('/data_hu_dashboard')
+def get_hu_dashboard_data() -> Dict[str, Any]:
     try:
         if watcher is None:
             raise HTTPException(status_code=503, detail="File watcher not initialized")
         
-        if not watcher.deliveries_today_data:
-            logger.warning("DELIVERIES TODAY data is empty")
+        if not watcher.hu_dashboard_data:
+            logger.warning("HU DASHBOARD data is empty")
             return {}
         
-        result = watcher.deliveries_today_data
-        logger.debug(f"Returning DELIVERIES TODAY data: {len(result)} entries")
+        result = watcher.hu_dashboard_data
+        logger.debug(f"Returning HU DASHBOARD data: {len(result)} entries")
         return result
         
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error getting deliveries today data: {e}", exc_info=True)
+        logger.error(f"Error getting hu dashboard data: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
-@app.get('/data_deliveries_future')
-def get_deliveries_future_data() -> Dict[str, Any]:
+@app.get('/data_lines_dashboard')
+def get_lines_dashboard_data() -> Dict[str, Any]:
     try:
         if watcher is None:
             raise HTTPException(status_code=503, detail="File watcher not initialized")
         
-        if not watcher.deliveries_future_data:
-            logger.warning("DELIVERIES FUTURE data is empty")
+        if not watcher.lines_dashboard_data:
+            logger.warning("LINES DASHBOARD data is empty")
             return {}
         
-        result = watcher.deliveries_future_data
-        logger.debug(f"Returning DELIVERIES FUTURE data: {len(result)} entries")
+        result = watcher.lines_dashboard_data
+        logger.debug(f"Returning LINES DASHBOARD data: {len(result)} entries")
         return result
         
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error getting deliveries future data: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
-
-@app.get('/data_hu_past')
-def get_hu_past_data() -> Dict[str, Any]:
-    try:
-        if watcher is None:
-            raise HTTPException(status_code=503, detail="File watcher not initialized")
-        
-        if not watcher.hu_past_data:
-            logger.warning("HU PAST data is empty")
-            return {}
-        
-        result = watcher.hu_past_data
-        logger.debug(f"Returning HU PAST data: {len(result)} entries")
-        return result
-        
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Error getting hu past data: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
-
-@app.get('/data_hu_today')
-def get_hu_today_data() -> Dict[str, Any]:
-    try:
-        if watcher is None:
-            raise HTTPException(status_code=503, detail="File watcher not initialized")
-        
-        if not watcher.hu_today_data:
-            logger.warning("HU TODAY data is empty")
-            return {}
-        
-        result = watcher.hu_today_data
-        logger.debug(f"Returning HU TODAY data: {len(result)} entries")
-        return result
-        
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Error getting hu today data: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
-
-@app.get('/data_hu_future')
-def get_hu_future_data() -> Dict[str, Any]:
-    try:
-        if watcher is None:
-            raise HTTPException(status_code=503, detail="File watcher not initialized")
-        
-        if not watcher.hu_future_data:
-            logger.warning("HU FUTURE data is empty")
-            return {}
-        
-        result = watcher.hu_future_data
-        logger.debug(f"Returning HU FUTURE data: {len(result)} entries")
-        return result
-        
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Error getting hu future data: {e}", exc_info=True)
+        logger.error(f"Error getting lines dashboard data: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
 @app.get('/users_names')
