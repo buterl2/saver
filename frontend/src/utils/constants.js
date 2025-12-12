@@ -30,3 +30,10 @@ export const FLOW_TYPES = {
 // Printer options
 export const PRINTERS = ['Ground Floor', '1st Floor', '2nd Floor'];
 
+// Average ratios for BFlow Dashboard
+export const AVERAGE_RATIOS = {
+  HU_PER_DELIVERY: 1.20,
+  LINES_PER_HU: 2.30,
+  LINES_PER_DELIVERY: 2.46,
+};
+

@@ -112,3 +112,45 @@ export const fetchHuFuture = async () => {
   return apiFetch(API_ENDPOINTS.HU_FUTURE);
 };
 
+/**
+ * Fetch deliveries dashboard data
+ */
+export const fetchDeliveriesDashboard = async () => {
+  return apiFetch(API_ENDPOINTS.DELIVERIES_DASHBOARD);
+};
+
+/**
+ * Fetch HU dashboard data
+ */
+export const fetchHuDashboard = async () => {
+  return apiFetch(API_ENDPOINTS.HU_DASHBOARD);
+};
+
+/**
+ * Fetch lines dashboard data
+ */
+export const fetchLinesDashboard = async () => {
+  return apiFetch(API_ENDPOINTS.LINES_DASHBOARD);
+};
+
+/**
+ * Fetch deliveries PGI dashboard data
+ */
+export const fetchDeliveriesPgiDashboard = async () => {
+  return apiFetch(API_ENDPOINTS.DELIVERIES_PGI_DASHBOARD);
+};
+
+/**
+ * Fetch HU PGI dashboard data
+ */
+export const fetchHuPgiDashboard = async () => {
+  return apiFetch(API_ENDPOINTS.HU_PGI_DASHBOARD);
+};
+
+/**
+ * Fetch lines PGI dashboard data
+ */
+export const fetchLinesPgiDashboard = async () => {
+  return apiFetch(API_ENDPOINTS.LINES_PGI_DASHBOARD);
+};
+

@@ -1,5 +1,5 @@
 // API Configuration
-export const API_BASE_URL = 'http://10.177.184.21:8000';
+export const API_BASE_URL = 'http://192.168.178.242:8000';
 
 // API Endpoints
 export const API_ENDPOINTS = {
@@ -13,5 +13,12 @@ export const API_ENDPOINTS = {
   HU_PAST: '/data_hu_past',
   HU_TODAY: '/data_hu_today',
   HU_FUTURE: '/data_hu_future',
+  // New dashboard endpoints
+  DELIVERIES_DASHBOARD: '/data_deliveries_dashboard',
+  HU_DASHBOARD: '/data_hu_dashboard',
+  LINES_DASHBOARD: '/data_lines_dashboard',
+  DELIVERIES_PGI_DASHBOARD: '/data_deliveries_pgi_dashboard',
+  HU_PGI_DASHBOARD: '/data_hu_pgi_dashboard',
+  LINES_PGI_DASHBOARD: '/data_lines_pgi_dashboard',
 };
 

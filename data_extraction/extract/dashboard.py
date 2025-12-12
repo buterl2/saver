@@ -765,6 +765,209 @@ def create_lines_all_floors():
     with open(output_path, 'w', encoding='utf-8') as f:
         json.dump(result, f, indent=4, ensure_ascii=False)
 
+def create_deliveries_all_floors_pgi():
+    # Today's date
+    today = datetime.now().strftime("%d.%m.%Y")
+    
+    # Read likp_dashboard.csv
+    likp_df = pd.read_csv(f"{config.OUTPUT_PATH}likp_dashboard.csv")
+    
+    # Convert delivery to int (handle NaN values)
+    likp_df["delivery"] = likp_df["delivery"].fillna(0).astype(int)
+    
+    # Get unique deliveries from likp_dashboard.csv
+    unique_deliveries = set(likp_df["delivery"].drop_duplicates())
+    
+    # Remove 0 deliveries
+    unique_deliveries.discard(0)
+    
+    # Read zorf files
+    zorf_hu_to_link_likp_df = pd.read_csv(f"{config.OUTPUT_PATH}zorf_hu_to_link_likp.csv")
+    zorf_huto_lnkhis_likp_df = pd.read_csv(f"{config.OUTPUT_PATH}zorf_huto_lnkhis_likp.csv")
+    
+    # Convert delivery to int in zorf files
+    zorf_hu_to_link_likp_df["delivery"] = zorf_hu_to_link_likp_df["delivery"].fillna(0).astype(int)
+    zorf_huto_lnkhis_likp_df["delivery"] = zorf_huto_lnkhis_likp_df["delivery"].fillna(0).astype(int)
+    
+    # Combine zorf files
+    all_zorf_dfs = [
+        zorf_hu_to_link_likp_df,
+        zorf_huto_lnkhis_likp_df
+    ]
+    
+    # Create a dictionary to store delivery -> set of floors
+    delivery_to_floors = {}
+    
+    # Process each zorf file
+    for zorf_df in all_zorf_dfs:
+        for _, row in zorf_df.iterrows():
+            delivery = int(row['delivery'])
+            source_bin = row['source_bin']
+            
+            # Skip if delivery is 0
+            if delivery == 0:
+                continue
+            
+            floors = determine_floor(source_bin)
+            
+            if delivery not in delivery_to_floors:
+                delivery_to_floors[delivery] = set()
+            
+            delivery_to_floors[delivery].update(floors)
+    
+    # Initialize result dictionary
+    result = {
+        today: {
+            'ground_floor': {'amount_of_deliveries_pgi': set()},
+            'first_floor': {'amount_of_deliveries_pgi': set()},
+            'second_floor': {'amount_of_deliveries_pgi': set()},
+            'amount_of_deliveries_pgi': set()
+        }
+    }
+    
+    # Process each unique delivery from likp_dashboard.csv
+    for delivery in unique_deliveries:
+        # Get floors for this delivery from zorf files
+        floors = delivery_to_floors.get(delivery, set())
+        
+        # If no floors found, skip this delivery
+        if not floors:
+            continue
+        
+        # Add this delivery to each floor it belongs to
+        for floor in floors:
+            result[today][floor]['amount_of_deliveries_pgi'].add(delivery)
+        
+        # Add to total count (unique deliveries across all floors)
+        result[today]['amount_of_deliveries_pgi'].add(delivery)
+    
+    # Convert sets to counts
+    result[today]['ground_floor']['amount_of_deliveries_pgi'] = len(result[today]['ground_floor']['amount_of_deliveries_pgi'])
+    result[today]['first_floor']['amount_of_deliveries_pgi'] = len(result[today]['first_floor']['amount_of_deliveries_pgi'])
+    result[today]['second_floor']['amount_of_deliveries_pgi'] = len(result[today]['second_floor']['amount_of_deliveries_pgi'])
+    result[today]['amount_of_deliveries_pgi'] = len(result[today]['amount_of_deliveries_pgi'])
+    
+    # Save to JSON file
+    output_path = f"{config.OUTPUT_PATH}deliveries_all_floors_pgi.json"
+    with open(output_path, 'w', encoding='utf-8') as f:
+        json.dump(result, f, indent=4, ensure_ascii=False)
+
+def create_hu_all_floors_pgi():
+    # Today's date
+    today = datetime.now().strftime("%d.%m.%Y")
+    
+    # Read zorf files with dtype str for hu column
+    zorf_hu_to_link_likp_df = pd.read_csv(f"{config.OUTPUT_PATH}zorf_hu_to_link_likp.csv", dtype={'hu': str})
+    zorf_huto_lnkhis_likp_df = pd.read_csv(f"{config.OUTPUT_PATH}zorf_huto_lnkhis_likp.csv", dtype={'hu': str})
+    
+    # Combine zorf files
+    all_zorf_dfs = [
+        zorf_hu_to_link_likp_df,
+        zorf_huto_lnkhis_likp_df
+    ]
+    
+    # Create a dictionary to store hu -> set of floors
+    hu_to_floors = {}
+    
+    # Process each zorf file
+    for zorf_df in all_zorf_dfs:
+        for _, row in zorf_df.iterrows():
+            hu = str(row['hu']).strip() if pd.notna(row['hu']) else ''
+            source_bin = row['source_bin']
+            
+            # Skip if hu is empty
+            if hu == '':
+                continue
+            
+            floors = determine_floor(source_bin)
+            
+            if hu not in hu_to_floors:
+                hu_to_floors[hu] = set()
+            
+            hu_to_floors[hu].update(floors)
+    
+    # Initialize result dictionary
+    result = {
+        today: {
+            'ground_floor': {'amount_of_hu_pgi': set()},
+            'first_floor': {'amount_of_hu_pgi': set()},
+            'second_floor': {'amount_of_hu_pgi': set()},
+            'amount_of_hu_pgi': set()
+        }
+    }
+    
+    # Process each unique HU
+    for hu, floors in hu_to_floors.items():
+        # If no floors found, skip this HU
+        if not floors:
+            continue
+        
+        # Add this HU to each floor it belongs to
+        for floor in floors:
+            result[today][floor]['amount_of_hu_pgi'].add(hu)
+        
+        # Add to total count (unique HUs across all floors)
+        result[today]['amount_of_hu_pgi'].add(hu)
+    
+    # Convert sets to counts
+    result[today]['ground_floor']['amount_of_hu_pgi'] = len(result[today]['ground_floor']['amount_of_hu_pgi'])
+    result[today]['first_floor']['amount_of_hu_pgi'] = len(result[today]['first_floor']['amount_of_hu_pgi'])
+    result[today]['second_floor']['amount_of_hu_pgi'] = len(result[today]['second_floor']['amount_of_hu_pgi'])
+    result[today]['amount_of_hu_pgi'] = len(result[today]['amount_of_hu_pgi'])
+    
+    # Save to JSON file
+    output_path = f"{config.OUTPUT_PATH}hu_all_floors_pgi.json"
+    with open(output_path, 'w', encoding='utf-8') as f:
+        json.dump(result, f, indent=4, ensure_ascii=False)
+
+def create_lines_all_floors_pgi():
+    # Today's date
+    today = datetime.now().strftime("%d.%m.%Y")
+    
+    # Read zorf files
+    zorf_hu_to_link_likp_df = pd.read_csv(f"{config.OUTPUT_PATH}zorf_hu_to_link_likp.csv")
+    zorf_huto_lnkhis_likp_df = pd.read_csv(f"{config.OUTPUT_PATH}zorf_huto_lnkhis_likp.csv")
+    
+    # Combine zorf files
+    all_zorf_dfs = [
+        zorf_hu_to_link_likp_df,
+        zorf_huto_lnkhis_likp_df
+    ]
+    
+    # Initialize result dictionary
+    result = {
+        today: {
+            'ground_floor': {'amount_of_lines_pgi': 0},
+            'first_floor': {'amount_of_lines_pgi': 0},
+            'second_floor': {'amount_of_lines_pgi': 0},
+            'amount_of_lines_pgi': 0
+        }
+    }
+    
+    # Process each row (each row represents a line)
+    for zorf_df in all_zorf_dfs:
+        for _, row in zorf_df.iterrows():
+            source_bin = row['source_bin']
+            
+            # Determine floor from source_bin
+            floors = determine_floor(source_bin)
+            
+            # If no floors found, skip this row
+            if not floors:
+                continue
+            
+            # Count this line for each floor it belongs to
+            for floor in floors:
+                result[today][floor]['amount_of_lines_pgi'] += 1
+            
+            # Count in total (each row is counted once in total, regardless of how many floors it belongs to)
+            result[today]['amount_of_lines_pgi'] += 1
+    
+    # Save to JSON file
+    output_path = f"{config.OUTPUT_PATH}lines_all_floors_pgi.json"
+    with open(output_path, 'w', encoding='utf-8') as f:
+        json.dump(result, f, indent=4, ensure_ascii=False)
+
 if __name__ == "__main__":
     extract_vl06f_for_dashboard()
     print('1')
@@ -804,3 +1007,9 @@ if __name__ == "__main__":
     print('18')
     create_lines_all_floors()
     print('19')
+    create_deliveries_all_floors_pgi()
+    print('20')
+    create_hu_all_floors_pgi()
+    print('21')
+    create_lines_all_floors_pgi()
+    print('22')

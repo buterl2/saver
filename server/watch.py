@@ -26,6 +26,9 @@ class WatchFiles:
         self.deliveries_dashboard_data_path = os.path.join(self.data_folder_path, "deliveries_all_floors.json")
         self.hu_dashboard_data_path = os.path.join(self.data_folder_path, "hu_all_floors.json")
         self.lines_dashboard_data_path = os.path.join(self.data_folder_path, "lines_all_floors.json")
+        self.deliveries_pgi_dashboard_data_path = os.path.join(self.data_folder_path, "deliveries_all_floors_pgi.json")
+        self.hu_pgi_dashboard_data_path = os.path.join(self.data_folder_path, "hu_all_floors_pgi.json")
+        self.lines_pgi_dashboard_data_path = os.path.join(self.data_folder_path, "lines_all_floors_pgi.json")
         self.users_name_path = os.path.join(self.data_folder_path, "users_name.csv")
 
         # INITIALIZE DATA STORAGE
@@ -35,6 +38,9 @@ class WatchFiles:
         self.deliveries_dashboard_data = {}
         self.hu_dashboard_data = {}
         self.lines_dashboard_data = {}
+        self.deliveries_pgi_dashboard_data = {}
+        self.hu_pgi_dashboard_data = {}
+        self.lines_pgi_dashboard_data = {}
 
         # LOAD INITIAL DATA
         self.load_cdhdr()
@@ -42,6 +48,9 @@ class WatchFiles:
         self.load_deliveries_dashboard()
         self.load_hu_dashboard()
         self.load_lines_dashboard()
+        self.load_deliveries_pgi_dashboard()
+        self.load_hu_pgi_dashboard()
+        self.load_lines_pgi_dashboard()
         self.load_users_name()
 
         logger.info("WatchFiles initialized successfully")
@@ -134,6 +143,21 @@ class WatchFiles:
         logger.info(f"Loading LINES DASHBOARD data from {self.lines_dashboard_data_path}")
         self.lines_dashboard_data = self._load_json_file(self.lines_dashboard_data_path, {})
         logger.info(f"LINES DASHBOARD data loaded {len(self.lines_dashboard_data)} entries")
+    
+    def load_deliveries_pgi_dashboard(self):
+        logger.info(f"Loading DELIVERIES PGI DASHBOARD data from {self.deliveries_pgi_dashboard_data_path}")
+        self.deliveries_pgi_dashboard_data = self._load_json_file(self.deliveries_pgi_dashboard_data_path, {})
+        logger.info(f"DELIVERIES PGI DASHBOARD data loaded {len(self.deliveries_pgi_dashboard_data)} entries")
+    
+    def load_hu_pgi_dashboard(self):
+        logger.info(f"Loading HU PGI DASHBOARD data from {self.hu_pgi_dashboard_data_path}")
+        self.hu_pgi_dashboard_data = self._load_json_file(self.hu_pgi_dashboard_data_path, {})
+        logger.info(f"HU PGI DASHBOARD data loaded {len(self.hu_pgi_dashboard_data)} entries")
+
+    def load_lines_pgi_dashboard(self):
+        logger.info(f"Loading LINES PGI DASHBOARD data from {self.lines_pgi_dashboard_data_path}")
+        self.lines_pgi_dashboard_data = self._load_json_file(self.lines_pgi_dashboard_data_path, {})
+        logger.info(f"LINES PGI DASHBOARD data loaded {len(self.lines_pgi_dashboard_data)} entries")
 
     def load_users_name(self):
         logger.info(f"Loading user names from {self.users_name_path}")
@@ -184,6 +208,15 @@ class WatchFiles:
                 elif event.src_path == self.watcher.lines_dashboard_data_path:
                     logger.info("LINES DASHBOARD file modified, reloading...")
                     self.watcher.load_lines_dashboard()
+                elif event.src_path == self.watcher.deliveries_pgi_dashboard_data_path:
+                    logger.info("DELIVERIES PGI DASHBOARD file modified, reloading...")
+                    self.watcher.load_deliveries_pgi_dashboard()
+                elif event.src_path == self.watcher.hu_pgi_dashboard_data_path:
+                    logger.info("HU PGI DASHBOARD file modified, reloading...")
+                    self.watcher.load_hu_pgi_dashboard()
+                elif event.src_path == self.watcher.lines_pgi_dashboard_data_path:
+                    logger.info("LINES PGI DASHBOARD file modified, reloading...")
+                    self.watcher.load_lines_pgi_dashboard()
                 elif event.src_path == self.watcher.users_name_path:
                     logger.info("User names file modified, reloading...")
                     self.watcher.load_users_name()
