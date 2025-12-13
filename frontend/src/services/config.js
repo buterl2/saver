@@ -20,5 +20,6 @@ export const API_ENDPOINTS = {
   DELIVERIES_PGI_DASHBOARD: '/data_deliveries_pgi_dashboard',
   HU_PGI_DASHBOARD: '/data_hu_pgi_dashboard',
   LINES_PGI_DASHBOARD: '/data_lines_pgi_dashboard',
+  LINES_HOURLY_DASHBOARD: '/data_lines_hourly_dashboard',
 };
 

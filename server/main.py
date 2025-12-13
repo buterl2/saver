@@ -265,6 +265,26 @@ def get_lines_pgi_dashboard_data() -> Dict[str, Any]:
         logger.error(f"Error getting lines pgi dashboard data: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
+@app.get('/data_lines_hourly_dashboard')
+def get_lines_hourly_dashboard_data() -> Dict[str, Any]:
+    try:
+        if watcher is None:
+            raise HTTPException(status_code=503, detail="File watcher not initialized")
+        
+        if not watcher.lines_hourly_dashboard_data:
+            logger.warning("LINES HOURLY DASHBOARD data is empty")
+            return {}
+        
+        result = watcher.lines_hourly_dashboard_data
+        logger.debug(f"Returning LINES HOURLY DASHBOARD data: {len(result)} entries")
+        return result
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting lines hourly dashboard data: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
+
 @app.get('/users_names')
 def get_all_users() -> Set[str]:
     try:

@@ -29,6 +29,7 @@ class WatchFiles:
         self.deliveries_pgi_dashboard_data_path = os.path.join(self.data_folder_path, "deliveries_all_floors_pgi.json")
         self.hu_pgi_dashboard_data_path = os.path.join(self.data_folder_path, "hu_all_floors_pgi.json")
         self.lines_pgi_dashboard_data_path = os.path.join(self.data_folder_path, "lines_all_floors_pgi.json")
+        self.lines_hourly_dashboard_data_path = os.path.join(self.data_folder_path, "picking_hourly_dashboard.json")
         self.users_name_path = os.path.join(self.data_folder_path, "users_name.csv")
 
         # INITIALIZE DATA STORAGE
@@ -41,6 +42,7 @@ class WatchFiles:
         self.deliveries_pgi_dashboard_data = {}
         self.hu_pgi_dashboard_data = {}
         self.lines_pgi_dashboard_data = {}
+        self.lines_hourly_dashboard_data = {}
 
         # LOAD INITIAL DATA
         self.load_cdhdr()
@@ -51,6 +53,7 @@ class WatchFiles:
         self.load_deliveries_pgi_dashboard()
         self.load_hu_pgi_dashboard()
         self.load_lines_pgi_dashboard()
+        self.load_lines_hourly_dashboard()
         self.load_users_name()
 
         logger.info("WatchFiles initialized successfully")
@@ -159,6 +162,11 @@ class WatchFiles:
         self.lines_pgi_dashboard_data = self._load_json_file(self.lines_pgi_dashboard_data_path, {})
         logger.info(f"LINES PGI DASHBOARD data loaded {len(self.lines_pgi_dashboard_data)} entries")
 
+    def load_lines_hourly_dashboard(self):
+        logger.info(f"Loading LINES HOURLY DASHBOARD data from {self.lines_hourly_dashboard_data_path}")
+        self.lines_hourly_dashboard_data = self._load_json_file(self.lines_hourly_dashboard_data_path, {})
+        logger.info(f"LINES HOURLY DASHBOARD data loaded {len(self.lines_hourly_dashboard_data)} entries")
+
     def load_users_name(self):
         logger.info(f"Loading user names from {self.users_name_path}")
         try:
@@ -217,6 +225,9 @@ class WatchFiles:
                 elif event.src_path == self.watcher.lines_pgi_dashboard_data_path:
                     logger.info("LINES PGI DASHBOARD file modified, reloading...")
                     self.watcher.load_lines_pgi_dashboard()
+                elif event.src_path == self.watcher.lines_hourly_dashboard_data_path:
+                    logger.info("LINES HOURLY DASHBOARD file modified, reloading...")
+                    self.watcher.load_lines_hourly_dashboard()
                 elif event.src_path == self.watcher.users_name_path:
                     logger.info("User names file modified, reloading...")
                     self.watcher.load_users_name()

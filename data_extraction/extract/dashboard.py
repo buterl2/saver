@@ -36,7 +36,7 @@ def extract_likp_for_dashboard():
     extractor.findById("wnd[2]/tbar[0]/btn[0]").press()
     extractor.findById("wnd[1]/tbar[0]/btn[8]").press()
     extractor.findById("wnd[0]/usr/ctxtI8-LOW").text = config.WAREHOUSE
-    extractor.findById("wnd[0]/usr/ctxtI9-LOW").text = today
+    extractor.findById("wnd[0]/usr/ctxtI9-LOW").text = '12.12.2025' # CHANGEBACK
     extractor.findById("wnd[0]/usr/ctxtI9-LOW").setFocus()
     extractor.findById("wnd[0]/usr/ctxtI9-LOW").caretPosition = 10
     extractor.findById("wnd[0]").sendVKey(0)
@@ -968,8 +968,114 @@ def create_lines_all_floors_pgi():
     with open(output_path, 'w', encoding='utf-8') as f:
         json.dump(result, f, indent=4, ensure_ascii=False)
 
+def create_picking_hourly_dashboard():
+    # Read bflow_routes.csv to get valid routes
+    bflow_routes_df = pd.read_csv(f"{config.OUTPUT_PATH}bflow_routes.csv")
+    valid_routes = set(bflow_routes_df['route'].str.strip().str.upper())
+    
+    # Read picking_productivity_huto_lnkhis.csv and picking_productivity_hu_to_link.csv
+    # Create a mapping: document -> route
+    huto_lnkhis_df = pd.read_csv(f"{config.OUTPUT_PATH}picking_productivity_huto_lnkhis.csv")
+    hu_to_link_df = pd.read_csv(f"{config.OUTPUT_PATH}picking_productivity_hu_to_link.csv")
+    
+    # Combine both dataframes and create document -> route mapping
+    # Convert document to string/numeric for matching
+    document_to_route = {}
+    
+    for _, row in huto_lnkhis_df.iterrows():
+        document = row['document']
+        route = str(row['route']).strip().upper() if pd.notna(row['route']) else ''
+        if pd.notna(document) and route:
+            # Convert document to same type as destination_bin (likely int or float)
+            doc_value = int(float(document)) if pd.notna(document) else None
+            if doc_value is not None:
+                document_to_route[doc_value] = route
+    
+    for _, row in hu_to_link_df.iterrows():
+        document = row['document']
+        route = str(row['route']).strip().upper() if pd.notna(row['route']) else ''
+        if pd.notna(document) and route:
+            doc_value = int(float(document)) if pd.notna(document) else None
+            if doc_value is not None:
+                # Only add if not already present (or update if needed)
+                document_to_route[doc_value] = route
+    
+    # Read picking_productivity_ltap.csv
+    ltap_df = pd.read_csv(f"{config.OUTPUT_PATH}picking_productivity_ltap.csv")
+    
+    # Initialize result dictionary
+    result = {}
+    
+    # Process each row in ltap_df
+    for _, row in ltap_df.iterrows():
+        destination_bin = row['destination_bin']
+        confirmation_time = row['confirmation_time']
+        
+        # Skip if destination_bin is NaN or empty
+        if pd.isna(destination_bin):
+            continue
+        
+        # Convert destination_bin to int for matching
+        try:
+            dest_bin_value = int(float(destination_bin))
+        except (ValueError, TypeError):
+            continue
+        
+        # Look up route in document_to_route mapping
+        if dest_bin_value not in document_to_route:
+            continue
+        
+        route = document_to_route[dest_bin_value]
+        
+        # Check if route is in valid_routes
+        if route not in valid_routes:
+            continue
+        
+        # Extract hour from confirmation_time (format: HH:MM:SS)
+        if pd.isna(confirmation_time) or confirmation_time == '':
+            continue
+        
+        try:
+            # Parse time string
+            time_str = str(confirmation_time).strip()
+            if ':' not in time_str:
+                continue
+            
+            # Split by colon to get hours and minutes
+            time_parts = time_str.split(':')
+            if len(time_parts) < 2:
+                continue
+            
+            hour = int(time_parts[0])
+            minute = int(time_parts[1])
+            
+            # Group into 30-minute intervals
+            # If minute < 30, use HH00, else use HH30
+            if minute < 30:
+                hour_key = f"{hour:02d}00"
+            else:
+                hour_key = f"{hour:02d}30"
+            
+            # Initialize hour entry if not exists
+            if hour_key not in result:
+                result[hour_key] = {'lines_picked': 0}
+            
+            # Count this line
+            result[hour_key]['lines_picked'] += 1
+            
+        except (ValueError, IndexError, TypeError):
+            continue
+    
+    # Sort by hour key for better readability
+    sorted_result = dict(sorted(result.items()))
+    
+    # Save to JSON file
+    output_path = f"{config.OUTPUT_PATH}picking_hourly_dashboard.json"
+    with open(output_path, 'w', encoding='utf-8') as f:
+        json.dump(sorted_result, f, indent=4, ensure_ascii=False)
+
 if __name__ == "__main__":
-    extract_vl06f_for_dashboard()
+    """extract_vl06f_for_dashboard()
     print('1')
     convert_vl06f_for_dashboard()
     print('2')
@@ -1012,4 +1118,5 @@ if __name__ == "__main__":
     create_hu_all_floors_pgi()
     print('21')
     create_lines_all_floors_pgi()
-    print('22')
+    print('22')"""
+    create_picking_hourly_dashboard()

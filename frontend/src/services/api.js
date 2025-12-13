@@ -154,3 +154,10 @@ export const fetchLinesPgiDashboard = async () => {
   return apiFetch(API_ENDPOINTS.LINES_PGI_DASHBOARD);
 };
 
+/**
+ * Fetch lines hourly dashboard data
+ */
+export const fetchLinesHourlyDashboard = async () => {
+  return apiFetch(API_ENDPOINTS.LINES_HOURLY_DASHBOARD);
+};
+

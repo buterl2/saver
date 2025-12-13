@@ -250,6 +250,24 @@
   align-items: center;
 }
 
+/* Chart Card */
+.bflow-chart-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 30px;
+  width: 100%;
+}
+
+.bflow-chart-title {
+  color: #ebe9ff;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 20px 0;
+  text-align: center;
+}
+
 /* Responsive design */
 @media (max-width: 1200px) {
   .bflow-main-card {

@@ -21,7 +21,7 @@ def extract_ltap_for_productivity():
     extractor.enter_table("LTAP")
     extractor.checkbox_selection(config.LTAP_CHECKBOX_SELECTIONS)
     extractor.findById("wnd[0]/usr/ctxtI1-LOW").text = config.WAREHOUSE
-    extractor.findById("wnd[0]/usr/ctxtI7-LOW").text = today
+    extractor.findById("wnd[0]/usr/ctxtI7-LOW").text = '12.12.2025' # CHANGEBACK
     extractor.findById("wnd[0]/tbar[1]/btn[8]").press()
 
     # Save to folder
@@ -74,7 +74,7 @@ def extract_cdhdr_for_productivity():
     extractor.StartTransaction("Z_TABU_DIS")
     extractor.enter_table("CDHDR")
     extractor.checkbox_selection(config.CDHDR_CHECKBOX_SELECTIONS)
-    extractor.findById('wnd[0]/usr/ctxtI5-LOW').text = today
+    extractor.findById('wnd[0]/usr/ctxtI5-LOW').text = '12.12.2025' # CHANGEBACK
     extractor.findById("wnd[0]/usr/ctxtI7-LOW").text = "ZORF_BOX_CLOSING"
     extractor.findById("wnd[0]/usr/btn%_I4_%_APP_%-VALU_PUSH").press()
     extractor.findById("wnd[1]/tbar[0]/btn[23]").press()

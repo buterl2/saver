@@ -8,8 +8,10 @@ import {
   fetchHuDashboard,
   fetchHuPgiDashboard,
   fetchLinesDashboard,
-  fetchLinesPgiDashboard
+  fetchLinesPgiDashboard,
+  fetchLinesHourlyDashboard
 } from '../../services/api';
+import LineChart from '../../components/charts/LineChart';
 import { AVERAGE_RATIOS } from '../../utils/constants';
 import './BFlowDashboard.css';
 
@@ -116,6 +118,7 @@ function BFlowDashboard() {
   const [huPgiData, setHuPgiData] = useState(null);
   const [linesData, setLinesData] = useState(null);
   const [linesPgiData, setLinesPgiData] = useState(null);
+  const [linesHourlyData, setLinesHourlyData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedFloor, setSelectedFloor] = useState('all');
   const [selectedDateRange, setSelectedDateRange] = useState('today');
@@ -124,13 +127,14 @@ function BFlowDashboard() {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const [deliveries, deliveriesPgi, hu, huPgi, lines, linesPgi] = await Promise.all([
+        const [deliveries, deliveriesPgi, hu, huPgi, lines, linesPgi, linesHourly] = await Promise.all([
           fetchDeliveriesDashboard(),
           fetchDeliveriesPgiDashboard(),
           fetchHuDashboard(),
           fetchHuPgiDashboard(),
           fetchLinesDashboard(),
           fetchLinesPgiDashboard(),
+          fetchLinesHourlyDashboard(),
         ]);
         setDeliveriesData(deliveries);
         setDeliveriesPgiData(deliveriesPgi);
@@ -138,6 +142,7 @@ function BFlowDashboard() {
         setHuPgiData(huPgi);
         setLinesData(lines);
         setLinesPgiData(linesPgi);
+        setLinesHourlyData(linesHourly);
       } catch (error) {
         console.error('Error fetching data:', error);
       } finally {
@@ -378,6 +383,124 @@ function BFlowDashboard() {
     return calculateIndicator(currentRatio, AVERAGE_RATIOS.LINES_PER_DELIVERY, false);
   }, [deliveriesMetrics.open, linesMetrics.open]);
 
+  // Process hourly data for chart
+  const chartData = useMemo(() => {
+    if (!linesHourlyData) return [];
+
+    const todayStr = getTodayString();
+    const today = parseDate(todayStr);
+
+    // Check if data is organized by date (has date keys like "DD.MM.YYYY")
+    // or if it's flat (directly has time slot keys like "0700")
+    const firstKey = Object.keys(linesHourlyData)[0];
+    const isDateOrganized = firstKey && firstKey.includes('.');
+
+    let filteredData = {};
+
+    if (isDateOrganized) {
+      // Data is organized by date
+      Object.entries(linesHourlyData).forEach(([dateStr, dateData]) => {
+        const date = parseDate(dateStr);
+        
+        let includeDate = false;
+        if (selectedDateRange === 'backlog' && date < today) {
+          includeDate = true;
+        } else if (selectedDateRange === 'today' && dateStr === todayStr) {
+          includeDate = true;
+        } else if (selectedDateRange === 'future' && date > today) {
+          includeDate = true;
+        }
+
+        if (includeDate && dateData) {
+          // Get data based on floor selection
+          let hourlyData = {};
+          
+          if (selectedFloor === 'all') {
+            hourlyData = dateData;
+          } else {
+            const floorData = dateData[selectedFloor];
+            if (floorData) {
+              hourlyData = floorData;
+            }
+          }
+
+          // Aggregate hourly data across all dates
+          Object.entries(hourlyData).forEach(([timeSlot, slotData]) => {
+            if (slotData && typeof slotData.lines_picked === 'number') {
+              if (!filteredData[timeSlot]) {
+                filteredData[timeSlot] = 0;
+              }
+              filteredData[timeSlot] += slotData.lines_picked;
+            }
+          });
+        }
+      });
+    } else {
+      // Data is flat - use directly (works for all filters as user mentioned)
+      Object.entries(linesHourlyData).forEach(([timeSlot, slotData]) => {
+        if (slotData && typeof slotData.lines_picked === 'number') {
+          filteredData[timeSlot] = slotData.lines_picked;
+        }
+      });
+    }
+
+    // Convert to array and format time slots
+    const timeSlots = Object.keys(filteredData).sort();
+    const chartData = timeSlots.map((timeSlot, index) => {
+      // Shift time by 30 minutes: 0700 -> 07:30, 0730 -> 08:00, etc.
+      const hours = parseInt(timeSlot.substring(0, 2));
+      const minutes = parseInt(timeSlot.substring(2, 4));
+      
+      // Add 30 minutes
+      let newHours = hours;
+      let newMinutes = minutes + 30;
+      if (newMinutes >= 60) {
+        newHours += 1;
+        newMinutes -= 60;
+      }
+      if (newHours >= 24) {
+        newHours -= 24;
+      }
+      
+      const formattedTime = `${String(newHours).padStart(2, '0')}:${String(newMinutes).padStart(2, '0')}`;
+      
+      return {
+        time: formattedTime,
+        timeSlot: timeSlot,
+        lines_picked: filteredData[timeSlot],
+        originalTime: `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`
+      };
+    });
+
+    // Calculate rate (lines per hour) - derivative
+    // Since each data point represents 30 minutes, we calculate the rate between consecutive points
+    const chartDataWithRate = chartData.map((point, index) => {
+      let rate = 0;
+      
+      if (index > 0) {
+        // Calculate rate: difference between current and previous point
+        // Since each point is 30 minutes, multiply by 2 to get per hour
+        const timeDiff = 0.5; // 30 minutes = 0.5 hours
+        const linesDiff = point.lines_picked - chartData[index - 1].lines_picked;
+        rate = linesDiff / timeDiff; // lines per hour
+      } else {
+        // For first point, use the next point's rate or 0
+        if (chartData.length > 1) {
+          const timeDiff = 0.5;
+          const linesDiff = chartData[1].lines_picked - point.lines_picked;
+          rate = linesDiff / timeDiff;
+        }
+      }
+      
+      return {
+        ...point,
+        lines_per_hour: Math.round(rate)
+      };
+    });
+
+    return chartDataWithRate;
+  }, [linesHourlyData, selectedFloor, selectedDateRange]);
+
   if (loading) {
     return (
       <PageLayout>
@@ -518,6 +641,12 @@ function BFlowDashboard() {
               </div>
             )}
           </div>
+        </div>
+
+        {/* Hourly Chart Card */}
+        <div className="bflow-chart-card">
+          <h3 className="bflow-chart-title">Lines Picked by Time</h3>
+          <LineChart data={chartData} height={300} />
         </div>
       </div>
     </PageLayout>
