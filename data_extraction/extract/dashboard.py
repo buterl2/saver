@@ -5,8 +5,10 @@ from data_extraction.utils.rename import rename
 import pandas as pd
 from datetime import datetime
 import json
+from collections import defaultdict
+from typing import Dict, Tuple, Any, Set, Union
 
-def extract_vl06f_for_dashboard():
+def extract_vl06f_for_dashboard() -> None:
     # Initialize SAP
     extractor = SAPSession()
 
@@ -17,7 +19,7 @@ def extract_vl06f_for_dashboard():
     # Save to folder
     extractor.save_to_folder("vl06f_dashboard")
 
-def extract_likp_for_dashboard():
+def extract_likp_for_dashboard() -> None:
     # Today's date
     today = datetime.now().strftime("%d.%m.%Y")
 
@@ -36,7 +38,7 @@ def extract_likp_for_dashboard():
     extractor.findById("wnd[2]/tbar[0]/btn[0]").press()
     extractor.findById("wnd[1]/tbar[0]/btn[8]").press()
     extractor.findById("wnd[0]/usr/ctxtI8-LOW").text = config.WAREHOUSE
-    extractor.findById("wnd[0]/usr/ctxtI9-LOW").text = '12.12.2025' # CHANGEBACK
+    extractor.findById("wnd[0]/usr/ctxtI9-LOW").text = today
     extractor.findById("wnd[0]/usr/ctxtI9-LOW").setFocus()
     extractor.findById("wnd[0]/usr/ctxtI9-LOW").caretPosition = 10
     extractor.findById("wnd[0]").sendVKey(0)
@@ -45,19 +47,19 @@ def extract_likp_for_dashboard():
     # Save to folder
     extractor.save_to_folder("likp_dashboard")
 
-def extract_zorf_huto_link_vl06f():
+def extract_zorf_huto_link(transaction: str, inputFile: str, outputFile: str) -> None:
     # Initialize SAP
     extractor = SAPSession()
 
     # Start transaction & configure it
     extractor.StartTransaction("Z_TABU_DIS")
-    extractor.enter_table("ZORF_HU_TO_LINK")
+    extractor.enter_table(transaction)
     extractor.checkbox_selection(config.HUTOLINK_CHECKBOX_SELECTIONS)
     extractor.findById('wnd[0]/usr/ctxtI1-LOW').text = config.WAREHOUSE
     extractor.findById("wnd[0]/usr/btn%_I5_%_APP_%-VALU_PUSH").press()
     extractor.findById("wnd[1]/tbar[0]/btn[23]").press()
     extractor.findById("wnd[2]/usr/ctxtDY_PATH").text = config.OUTPUT_PATH
-    extractor.findById("wnd[2]/usr/ctxtDY_FILENAME").text = "vl06f_deliveries.csv"
+    extractor.findById("wnd[2]/usr/ctxtDY_FILENAME").text = inputFile
     extractor.findById("wnd[2]/tbar[0]/btn[0]").press()
     extractor.findById("wnd[1]/tbar[0]/btn[8]").press()
     extractor.findById("wnd[0]/tbar[1]/btn[8]").press()
@@ -74,94 +76,9 @@ def extract_zorf_huto_link_vl06f():
     extractor.findById("wnd[1]/tbar[0]/btn[0]").press()
 
     # Save to folder
-    extractor.save_to_folder("zorf_hu_to_link_vl06f")
+    extractor.save_to_folder(outputFile)
 
-    # Start transaction & configure it
-    """extractor.StartTransaction("Z_TABU_DIS")
-    extractor.enter_table("ZORF_HUTO_LNKHIS")
-    extractor.checkbox_selection(config.HUTOLINK_CHECKBOX_SELECTIONS)
-    extractor.findById('wnd[0]/usr/ctxtI1-LOW').text = config.WAREHOUSE
-    extractor.findById("wnd[0]/usr/btn%_I5_%_APP_%-VALU_PUSH").press()
-    extractor.findById("wnd[1]/tbar[0]/btn[23]").press()
-    extractor.findById("wnd[2]/usr/ctxtDY_PATH").text = config.OUTPUT_PATH
-    extractor.findById("wnd[2]/usr/ctxtDY_FILENAME").text = "vl06f_deliveries.csv"
-    extractor.findById("wnd[2]/tbar[0]/btn[0]").press()
-    extractor.findById("wnd[1]/tbar[0]/btn[8]").press()
-    extractor.findById("wnd[0]/tbar[1]/btn[8]").press()
-    extractor.findById("wnd[0]/tbar[1]/btn[32]").press()
-    extractor.findById("wnd[1]/usr/tabsG_TS_ALV/tabpALV_M_R1/ssubSUB_DYN0510:SAPLSKBH:0620/cntlCONTAINER1_LAYO/shellcont/shell").currentCellRow = 2
-    extractor.findById("wnd[1]/usr/tabsG_TS_ALV/tabpALV_M_R1/ssubSUB_DYN0510:SAPLSKBH:0620/cntlCONTAINER1_LAYO/shellcont/shell").selectedRows = "2"
-    extractor.findById("wnd[1]/usr/tabsG_TS_ALV/tabpALV_M_R1/ssubSUB_DYN0510:SAPLSKBH:0620/btnAPP_WL_SING").press()
-    extractor.findById("wnd[1]/usr/tabsG_TS_ALV/tabpALV_M_R1/ssubSUB_DYN0510:SAPLSKBH:0620/cntlCONTAINER1_LAYO/shellcont/shell").currentCellRow = 3
-    extractor.findById("wnd[1]/usr/tabsG_TS_ALV/tabpALV_M_R1/ssubSUB_DYN0510:SAPLSKBH:0620/cntlCONTAINER1_LAYO/shellcont/shell").selectedRows = "3"
-    extractor.findById("wnd[1]/usr/tabsG_TS_ALV/tabpALV_M_R1/ssubSUB_DYN0510:SAPLSKBH:0620/btnAPP_WL_SING").press()
-    extractor.findById("wnd[1]/usr/tabsG_TS_ALV/tabpALV_M_R1/ssubSUB_DYN0510:SAPLSKBH:0620/cntlCONTAINER1_LAYO/shellcont/shell").currentCellRow = 8
-    extractor.findById("wnd[1]/usr/tabsG_TS_ALV/tabpALV_M_R1/ssubSUB_DYN0510:SAPLSKBH:0620/cntlCONTAINER1_LAYO/shellcont/shell").selectedRows = "8"
-    extractor.findById("wnd[1]/usr/tabsG_TS_ALV/tabpALV_M_R1/ssubSUB_DYN0510:SAPLSKBH:0620/btnAPP_WL_SING").press()
-    extractor.findById("wnd[1]/tbar[0]/btn[0]").press()
-
-    # Save to folder
-    extractor.save_to_folder("zorf_huto_lnkhis_vl06f")"""
-
-def extract_zorf_huto_link_likp():
-    # Initialize SAP
-    extractor = SAPSession()
-
-    # Start transaction & configure it
-    extractor.StartTransaction("Z_TABU_DIS")
-    extractor.enter_table("ZORF_HU_TO_LINK")
-    extractor.checkbox_selection(config.HUTOLINK_CHECKBOX_SELECTIONS)
-    extractor.findById('wnd[0]/usr/ctxtI1-LOW').text = config.WAREHOUSE
-    extractor.findById("wnd[0]/usr/btn%_I5_%_APP_%-VALU_PUSH").press()
-    extractor.findById("wnd[1]/tbar[0]/btn[23]").press()
-    extractor.findById("wnd[2]/usr/ctxtDY_PATH").text = config.OUTPUT_PATH
-    extractor.findById("wnd[2]/usr/ctxtDY_FILENAME").text = "likp_deliveries.csv"
-    extractor.findById("wnd[2]/tbar[0]/btn[0]").press()
-    extractor.findById("wnd[1]/tbar[0]/btn[8]").press()
-    extractor.findById("wnd[0]/tbar[1]/btn[8]").press()
-    extractor.findById("wnd[0]/tbar[1]/btn[32]").press()
-    extractor.findById("wnd[1]/usr/tabsG_TS_ALV/tabpALV_M_R1/ssubSUB_DYN0510:SAPLSKBH:0620/cntlCONTAINER1_LAYO/shellcont/shell").currentCellRow = 2
-    extractor.findById("wnd[1]/usr/tabsG_TS_ALV/tabpALV_M_R1/ssubSUB_DYN0510:SAPLSKBH:0620/cntlCONTAINER1_LAYO/shellcont/shell").selectedRows = "2"
-    extractor.findById("wnd[1]/usr/tabsG_TS_ALV/tabpALV_M_R1/ssubSUB_DYN0510:SAPLSKBH:0620/btnAPP_WL_SING").press()
-    extractor.findById("wnd[1]/usr/tabsG_TS_ALV/tabpALV_M_R1/ssubSUB_DYN0510:SAPLSKBH:0620/cntlCONTAINER1_LAYO/shellcont/shell").currentCellRow = 3
-    extractor.findById("wnd[1]/usr/tabsG_TS_ALV/tabpALV_M_R1/ssubSUB_DYN0510:SAPLSKBH:0620/cntlCONTAINER1_LAYO/shellcont/shell").selectedRows = "3"
-    extractor.findById("wnd[1]/usr/tabsG_TS_ALV/tabpALV_M_R1/ssubSUB_DYN0510:SAPLSKBH:0620/btnAPP_WL_SING").press()
-    extractor.findById("wnd[1]/usr/tabsG_TS_ALV/tabpALV_M_R1/ssubSUB_DYN0510:SAPLSKBH:0620/cntlCONTAINER1_LAYO/shellcont/shell").currentCellRow = 8
-    extractor.findById("wnd[1]/usr/tabsG_TS_ALV/tabpALV_M_R1/ssubSUB_DYN0510:SAPLSKBH:0620/cntlCONTAINER1_LAYO/shellcont/shell").selectedRows = "8"
-    extractor.findById("wnd[1]/usr/tabsG_TS_ALV/tabpALV_M_R1/ssubSUB_DYN0510:SAPLSKBH:0620/btnAPP_WL_SING").press()
-    extractor.findById("wnd[1]/tbar[0]/btn[0]").press()
-
-    # Save to folder
-    extractor.save_to_folder("zorf_hu_to_link_likp")
-
-    # Start transaction & configure it
-    extractor.StartTransaction("Z_TABU_DIS")
-    extractor.enter_table("ZORF_HUTO_LNKHIS")
-    extractor.checkbox_selection(config.HUTOLINK_CHECKBOX_SELECTIONS)
-    extractor.findById('wnd[0]/usr/ctxtI1-LOW').text = config.WAREHOUSE
-    extractor.findById("wnd[0]/usr/btn%_I5_%_APP_%-VALU_PUSH").press()
-    extractor.findById("wnd[1]/tbar[0]/btn[23]").press()
-    extractor.findById("wnd[2]/usr/ctxtDY_PATH").text = config.OUTPUT_PATH
-    extractor.findById("wnd[2]/usr/ctxtDY_FILENAME").text = "likp_deliveries.csv"
-    extractor.findById("wnd[2]/tbar[0]/btn[0]").press()
-    extractor.findById("wnd[1]/tbar[0]/btn[8]").press()
-    extractor.findById("wnd[0]/tbar[1]/btn[8]").press()
-    extractor.findById("wnd[0]/tbar[1]/btn[32]").press()
-    extractor.findById("wnd[1]/usr/tabsG_TS_ALV/tabpALV_M_R1/ssubSUB_DYN0510:SAPLSKBH:0620/cntlCONTAINER1_LAYO/shellcont/shell").currentCellRow = 2
-    extractor.findById("wnd[1]/usr/tabsG_TS_ALV/tabpALV_M_R1/ssubSUB_DYN0510:SAPLSKBH:0620/cntlCONTAINER1_LAYO/shellcont/shell").selectedRows = "2"
-    extractor.findById("wnd[1]/usr/tabsG_TS_ALV/tabpALV_M_R1/ssubSUB_DYN0510:SAPLSKBH:0620/btnAPP_WL_SING").press()
-    extractor.findById("wnd[1]/usr/tabsG_TS_ALV/tabpALV_M_R1/ssubSUB_DYN0510:SAPLSKBH:0620/cntlCONTAINER1_LAYO/shellcont/shell").currentCellRow = 3
-    extractor.findById("wnd[1]/usr/tabsG_TS_ALV/tabpALV_M_R1/ssubSUB_DYN0510:SAPLSKBH:0620/cntlCONTAINER1_LAYO/shellcont/shell").selectedRows = "3"
-    extractor.findById("wnd[1]/usr/tabsG_TS_ALV/tabpALV_M_R1/ssubSUB_DYN0510:SAPLSKBH:0620/btnAPP_WL_SING").press()
-    extractor.findById("wnd[1]/usr/tabsG_TS_ALV/tabpALV_M_R1/ssubSUB_DYN0510:SAPLSKBH:0620/cntlCONTAINER1_LAYO/shellcont/shell").currentCellRow = 8
-    extractor.findById("wnd[1]/usr/tabsG_TS_ALV/tabpALV_M_R1/ssubSUB_DYN0510:SAPLSKBH:0620/cntlCONTAINER1_LAYO/shellcont/shell").selectedRows = "8"
-    extractor.findById("wnd[1]/usr/tabsG_TS_ALV/tabpALV_M_R1/ssubSUB_DYN0510:SAPLSKBH:0620/btnAPP_WL_SING").press()
-    extractor.findById("wnd[1]/tbar[0]/btn[0]").press()
-
-    # Save to folder
-    extractor.save_to_folder("zorf_huto_lnkhis_likp")
-
-def extract_ltap_from_to_numbers(file, filename):
+def extract_ltap_from_to_numbers(file: str, filename: str) -> None:
     # Initialize SAP
     extractor = SAPSession()
 
@@ -192,37 +109,28 @@ def extract_ltap_from_to_numbers(file, filename):
     # Save to folder
     extractor.save_to_folder(filename)
 
-def extract_bflow_routes():
+def extract_bflow_routes() -> None:
     routes_df = pd.read_csv(f"{config.OUTPUT_PATH}routes.csv")
     routes_df = routes_df.loc[routes_df["flow"] == "b_flow", "route"]
 
     routes_df.to_csv(f"{config.OUTPUT_PATH}bflow_routes.csv", index=False)
 
-def extract_deliveries_from_vl06f_for_dashboard():
+def extract_deliveries(inputFile: str, outputFile: str) -> None:
     # Extract deliveries
-    vl06f_df = pd.read_csv(f"{config.OUTPUT_PATH}vl06f_dashboard.csv")
-    vl06f_df["delivery"] = vl06f_df["delivery"].fillna(0).astype(int)
-    deliveries_df = vl06f_df["delivery"].drop_duplicates()
-    deliveries_df.to_csv(f"{config.OUTPUT_PATH}vl06f_deliveries.csv", index=False)
+    df = pd.read_csv(f"{config.OUTPUT_PATH}{inputFile}")
+    df["delivery"] = df["delivery"].fillna(0).astype(int)
+    deliveries_df = df["delivery"].drop_duplicates()
+    deliveries_df.to_csv(f"{config.OUTPUT_PATH}{outputFile}", index=False)
 
-def extract_deliveries_from_likp_for_dashboard():
-    # Extract deliveries
-    likp_df = pd.read_csv(f"{config.OUTPUT_PATH}likp_dashboard.csv")
-    likp_df["delivery"] = likp_df["delivery"].fillna(0).astype(int)
-    deliveries_df = likp_df["delivery"].drop_duplicates()
-    deliveries_df.to_csv(f"{config.OUTPUT_PATH}likp_deliveries.csv", index=False)
-
-def extract_to_number_from_zorf_huto_link_for_dashboard():
+def extract_to_number_from_zorf_huto_link_for_dashboard() -> None:
     # Extract to_number
     hu_to_link_likp_df = pd.read_csv(f"{config.OUTPUT_PATH}zorf_hu_to_link_likp.csv")
     hu_to_link_vl06f_df = pd.read_csv(f"{config.OUTPUT_PATH}zorf_hu_to_link_vl06f.csv")
     huto_lnkhis_likp_df = pd.read_csv(f"{config.OUTPUT_PATH}zorf_huto_lnkhis_likp.csv")
-    huto_lnkhis_vl06f_df = pd.read_csv(f"{config.OUTPUT_PATH}zorf_huto_lnkhis_vl06f.csv")
 
     hu_to_link_likp_df["to_number"] = hu_to_link_likp_df["to_number"].fillna(0).astype(int)
     hu_to_link_vl06f_df["to_number"] = hu_to_link_vl06f_df["to_number"].fillna(0).astype(int)
     huto_lnkhis_likp_df["to_number"] = huto_lnkhis_likp_df["to_number"].fillna(0).astype(int)
-    huto_lnkhis_vl06f_df["to_number"] = huto_lnkhis_vl06f_df["to_number"].fillna(0).astype(int)
 
     to_number_df_one = hu_to_link_likp_df["to_number"].drop_duplicates()
     to_number_df_one.to_csv(f"{config.OUTPUT_PATH}hu_to_link_likp_to_numbers.csv", index=False)
@@ -230,31 +138,27 @@ def extract_to_number_from_zorf_huto_link_for_dashboard():
     to_number_df_two.to_csv(f"{config.OUTPUT_PATH}hu_to_link_vl06f_to_numbers.csv", index=False)
     to_number_df_three = huto_lnkhis_likp_df["to_number"].drop_duplicates()
     to_number_df_three.to_csv(f"{config.OUTPUT_PATH}huto_lnkhis_likp_to_numbers.csv", index=False)
-    to_number_df_four = huto_lnkhis_vl06f_df["to_number"].drop_duplicates()
-    to_number_df_four.to_csv(f"{config.OUTPUT_PATH}huto_lnkhis_vl06f_to_numbers.csv", index=False)
 
-def convert_likp_for_dashboard():
+def convert_likp_for_dashboard() -> None:
     convert_to_csv("likp_dashboard")
 
     rename("likp_dashboard", config.LIKP_DF)
 
-def convert_vl06f_for_dashboard():
+def convert_vl06f_for_dashboard() -> None:
     convert_to_csv("vl06f_dashboard", dtype={"Handling Unit": "str"})
 
     rename("vl06f_dashboard", config.VL06F_DF, dtype={"Handling Unit": "str"})
 
-def convert_zorf_huto_link_for_dashboard():
+def convert_zorf_huto_link_for_dashboard() -> None:
     convert_to_csv("zorf_hu_to_link_likp", dtype={"Handling Unit": "str"})
     convert_to_csv("zorf_hu_to_link_vl06f", dtype={"Handling Unit": "str"})
     convert_to_csv("zorf_huto_lnkhis_likp", dtype={"Handling Unit": "str"})
-    convert_to_csv("zorf_huto_lnkhis_vl06f", dtype={"Handling Unit": "str"})
 
     rename("zorf_hu_to_link_likp", config.ZORF_HUTO_LINK_DASHBOARD_DF, dtype={"Handling Unit": "str"})
     rename("zorf_hu_to_link_vl06f", config.ZORF_HUTO_LINK_DASHBOARD_DF, dtype={"Handling Unit": "str"})
     rename("zorf_huto_lnkhis_likp", config.ZORF_HUTO_LINK_DASHBOARD_DF, dtype={"Handling Unit": "str"})
-    rename("zorf_huto_lnkhis_vl06f", config.ZORF_HUTO_LINK_DASHBOARD_DF, dtype={"Handling Unit": "str"})
 
-def convert_ltap_to_numbers():
+def convert_ltap_to_numbers() -> None:
     convert_to_csv("ltap_likp_to_numbers")
     convert_to_csv("ltap_vl06f_to_numbers")
     convert_to_csv("ltap_likp_to_numbers_two")
@@ -265,7 +169,7 @@ def convert_ltap_to_numbers():
     rename("ltap_likp_to_numbers_two", config.LTAP_DASHBOARD_DF)
     rename("ltap_vl06f_to_numbers_two", config.LTAP_DASHBOARD_DF)
 
-def determine_floor(source_bin):
+def determine_floor(source_bin: Union[str, float]) -> list[str]:
     if pd.isna(source_bin) or source_bin == '':
         return []
 
@@ -285,7 +189,7 @@ def determine_floor(source_bin):
 
     return floors
 
-def create_deliveries_all_floors():
+def create_deliveries_all_floors() -> None:
     # Read vl06f_dashboard.csv
     vl06f_df = pd.read_csv(f"{config.OUTPUT_PATH}vl06f_dashboard.csv")
     
@@ -296,25 +200,22 @@ def create_deliveries_all_floors():
     zorf_hu_to_link_likp_df = pd.read_csv(f"{config.OUTPUT_PATH}zorf_hu_to_link_likp.csv")
     zorf_hu_to_link_vl06f_df = pd.read_csv(f"{config.OUTPUT_PATH}zorf_hu_to_link_vl06f.csv")
     zorf_huto_lnkhis_likp_df = pd.read_csv(f"{config.OUTPUT_PATH}zorf_huto_lnkhis_likp.csv")
-    zorf_huto_lnkhis_vl06f_df = pd.read_csv(f"{config.OUTPUT_PATH}zorf_huto_lnkhis_vl06f.csv")
     
     # Convert delivery to int in all zorf files
     zorf_hu_to_link_likp_df["delivery"] = zorf_hu_to_link_likp_df["delivery"].fillna(0).astype(int)
     zorf_hu_to_link_vl06f_df["delivery"] = zorf_hu_to_link_vl06f_df["delivery"].fillna(0).astype(int)
     zorf_huto_lnkhis_likp_df["delivery"] = zorf_huto_lnkhis_likp_df["delivery"].fillna(0).astype(int)
-    zorf_huto_lnkhis_vl06f_df["delivery"] = zorf_huto_lnkhis_vl06f_df["delivery"].fillna(0).astype(int)
     
     # Combine all zorf files to create a mapping of delivery -> floors
     # We need to search all files for each delivery
     all_zorf_dfs = [
         zorf_hu_to_link_likp_df,
         zorf_hu_to_link_vl06f_df,
-        zorf_huto_lnkhis_likp_df,
-        zorf_huto_lnkhis_vl06f_df
+        zorf_huto_lnkhis_likp_df
     ]
     
     # Create a dictionary to store delivery -> set of floors
-    delivery_to_floors = {}
+    delivery_to_floors: Dict[int, Set[str]] = {}
     
     # Process each zorf file
     for zorf_df in all_zorf_dfs:
@@ -330,7 +231,7 @@ def create_deliveries_all_floors():
             delivery_to_floors[delivery].update(floors)
     
     # Initialize result dictionary
-    result = {}
+    result: Dict[str, Dict[str, Any]] = {}
     
     # Process vl06f_dashboard.csv
     for _, row in vl06f_df.iterrows():
@@ -472,7 +373,7 @@ def create_deliveries_all_floors():
     with open(output_path, 'w', encoding='utf-8') as f:
         json.dump(result, f, indent=4, ensure_ascii=False)
 
-def create_hu_all_floors():
+def create_hu_all_floors() -> None:
     # Read vl06f_dashboard.csv with dtype str for hu column
     vl06f_df = pd.read_csv(f"{config.OUTPUT_PATH}vl06f_dashboard.csv", dtype={'hu': str})
     
@@ -480,33 +381,29 @@ def create_hu_all_floors():
     zorf_hu_to_link_likp_df = pd.read_csv(f"{config.OUTPUT_PATH}zorf_hu_to_link_likp.csv", dtype={'hu': str})
     zorf_hu_to_link_vl06f_df = pd.read_csv(f"{config.OUTPUT_PATH}zorf_hu_to_link_vl06f.csv", dtype={'hu': str})
     zorf_huto_lnkhis_likp_df = pd.read_csv(f"{config.OUTPUT_PATH}zorf_huto_lnkhis_likp.csv", dtype={'hu': str})
-    zorf_huto_lnkhis_vl06f_df = pd.read_csv(f"{config.OUTPUT_PATH}zorf_huto_lnkhis_vl06f.csv", dtype={'hu': str})
     
     # Read all ltap files
     ltap_likp_to_numbers_df = pd.read_csv(f"{config.OUTPUT_PATH}ltap_likp_to_numbers.csv")
     ltap_likp_to_numbers_two_df = pd.read_csv(f"{config.OUTPUT_PATH}ltap_likp_to_numbers_two.csv")
     ltap_vl06f_to_numbers_df = pd.read_csv(f"{config.OUTPUT_PATH}ltap_vl06f_to_numbers.csv")
-    ltap_vl06f_to_numbers_two_df = pd.read_csv(f"{config.OUTPUT_PATH}ltap_vl06f_to_numbers_two.csv")
     
     # Combine all zorf files
     all_zorf_dfs = [
         zorf_hu_to_link_likp_df,
         zorf_hu_to_link_vl06f_df,
-        zorf_huto_lnkhis_likp_df,
-        zorf_huto_lnkhis_vl06f_df
+        zorf_huto_lnkhis_likp_df
     ]
     
     # Combine all ltap files
     all_ltap_dfs = [
         ltap_likp_to_numbers_df,
         ltap_likp_to_numbers_two_df,
-        ltap_vl06f_to_numbers_df,
-        ltap_vl06f_to_numbers_two_df
+        ltap_vl06f_to_numbers_df
     ]
     
     # Create a mapping: hu (with leading zeros) -> set of (to_number, source_bin) tuples
     # This will help us quickly find all to_numbers and source_bins for a given HU
-    hu_to_info = {}
+    hu_to_info: Dict[str, Dict[str, Set[Any]]] = {}
     
     for zorf_df in all_zorf_dfs:
         for _, row in zorf_df.iterrows():
@@ -527,7 +424,7 @@ def create_hu_all_floors():
     
     # Create a mapping: to_number -> list of confirmation_date values (to check if all have values)
     # We need to check ALL rows for each to_number in ALL ltap files
-    to_number_to_confirmation_dates = {}
+    to_number_to_confirmation_dates: Dict[Any, list[bool]] = {}
     
     for ltap_df in all_ltap_dfs:
         for _, row in ltap_df.iterrows():
@@ -545,7 +442,7 @@ def create_hu_all_floors():
                     to_number_to_confirmation_dates[to_number].append(False)
     
     # Initialize result dictionary
-    result = {}
+    result: Dict[str, Dict[str, Any]] = {}
     
     # Process vl06f_dashboard.csv
     for _, row in vl06f_df.iterrows():
@@ -656,7 +553,7 @@ def create_hu_all_floors():
     with open(output_path, 'w', encoding='utf-8') as f:
         json.dump(result, f, indent=4, ensure_ascii=False)
 
-def create_lines_all_floors():
+def create_lines_all_floors() -> None:
     # Read vl06f_dashboard.csv
     vl06f_df = pd.read_csv(f"{config.OUTPUT_PATH}vl06f_dashboard.csv")
     
@@ -674,7 +571,7 @@ def create_lines_all_floors():
     
     # Create a mapping: delivery -> gi_date from vl06f_dashboard
     # Each delivery should only have one date
-    delivery_to_date = {}
+    delivery_to_date: Dict[int, str] = {}
     for _, row in vl06f_df.iterrows():
         delivery = int(row['delivery'])
         gi_date = row['gi_date']
@@ -699,7 +596,7 @@ def create_lines_all_floors():
             delivery_to_date[delivery] = date_str
     
     # Initialize result dictionary
-    result = {}
+    result: Dict[str, Dict[str, Any]] = {}
     
     # Process each unique delivery
     for delivery in unique_deliveries:
@@ -765,7 +662,7 @@ def create_lines_all_floors():
     with open(output_path, 'w', encoding='utf-8') as f:
         json.dump(result, f, indent=4, ensure_ascii=False)
 
-def create_deliveries_all_floors_pgi():
+def create_deliveries_all_floors_pgi() -> None:
     # Today's date
     today = datetime.now().strftime("%d.%m.%Y")
     
@@ -796,7 +693,7 @@ def create_deliveries_all_floors_pgi():
     ]
     
     # Create a dictionary to store delivery -> set of floors
-    delivery_to_floors = {}
+    delivery_to_floors: Dict[int, Set[str]] = {}
     
     # Process each zorf file
     for zorf_df in all_zorf_dfs:
@@ -816,7 +713,7 @@ def create_deliveries_all_floors_pgi():
             delivery_to_floors[delivery].update(floors)
     
     # Initialize result dictionary
-    result = {
+    result: Dict[str, Dict[str, Any]] = {
         today: {
             'ground_floor': {'amount_of_deliveries_pgi': set()},
             'first_floor': {'amount_of_deliveries_pgi': set()},
@@ -852,7 +749,7 @@ def create_deliveries_all_floors_pgi():
     with open(output_path, 'w', encoding='utf-8') as f:
         json.dump(result, f, indent=4, ensure_ascii=False)
 
-def create_hu_all_floors_pgi():
+def create_hu_all_floors_pgi() -> None:
     # Today's date
     today = datetime.now().strftime("%d.%m.%Y")
     
@@ -867,7 +764,7 @@ def create_hu_all_floors_pgi():
     ]
     
     # Create a dictionary to store hu -> set of floors
-    hu_to_floors = {}
+    hu_to_floors: Dict[str, Set[str]] = {}
     
     # Process each zorf file
     for zorf_df in all_zorf_dfs:
@@ -887,7 +784,7 @@ def create_hu_all_floors_pgi():
             hu_to_floors[hu].update(floors)
     
     # Initialize result dictionary
-    result = {
+    result: Dict[str, Dict[str, Any]] = {
         today: {
             'ground_floor': {'amount_of_hu_pgi': set()},
             'first_floor': {'amount_of_hu_pgi': set()},
@@ -920,7 +817,7 @@ def create_hu_all_floors_pgi():
     with open(output_path, 'w', encoding='utf-8') as f:
         json.dump(result, f, indent=4, ensure_ascii=False)
 
-def create_lines_all_floors_pgi():
+def create_lines_all_floors_pgi() -> None:
     # Today's date
     today = datetime.now().strftime("%d.%m.%Y")
     
@@ -935,7 +832,7 @@ def create_lines_all_floors_pgi():
     ]
     
     # Initialize result dictionary
-    result = {
+    result: Dict[str, Dict[str, Any]] = {
         today: {
             'ground_floor': {'amount_of_lines_pgi': 0},
             'first_floor': {'amount_of_lines_pgi': 0},
@@ -968,7 +865,7 @@ def create_lines_all_floors_pgi():
     with open(output_path, 'w', encoding='utf-8') as f:
         json.dump(result, f, indent=4, ensure_ascii=False)
 
-def create_picking_hourly_dashboard():
+def create_picking_hourly_dashboard() -> None:
     # Read bflow_routes.csv to get valid routes
     bflow_routes_df = pd.read_csv(f"{config.OUTPUT_PATH}bflow_routes.csv")
     valid_routes = set(bflow_routes_df['route'].str.strip().str.upper())
@@ -980,7 +877,7 @@ def create_picking_hourly_dashboard():
     
     # Combine both dataframes and create document -> route mapping
     # Convert document to string/numeric for matching
-    document_to_route = {}
+    document_to_route: Dict[int, str] = {}
     
     for _, row in huto_lnkhis_df.iterrows():
         document = row['document']
@@ -1004,7 +901,7 @@ def create_picking_hourly_dashboard():
     ltap_df = pd.read_csv(f"{config.OUTPUT_PATH}picking_productivity_ltap.csv")
     
     # Initialize result dictionary
-    result = {}
+    result: Dict[str, Dict[str, int]] = {}
     
     # Process each row in ltap_df
     for _, row in ltap_df.iterrows():
@@ -1075,7 +972,7 @@ def create_picking_hourly_dashboard():
         json.dump(sorted_result, f, indent=4, ensure_ascii=False)
 
 if __name__ == "__main__":
-    """extract_vl06f_for_dashboard()
+    extract_vl06f_for_dashboard()
     print('1')
     convert_vl06f_for_dashboard()
     print('2')
@@ -1085,25 +982,25 @@ if __name__ == "__main__":
     print('4')
     convert_likp_for_dashboard()
     print('5')
-    extract_deliveries_from_vl06f_for_dashboard()
+    extract_deliveries("vl06f_dashboard.csv", "vl06f_deliveries.csv")
     print('6')
-    extract_deliveries_from_likp_for_dashboard()
+    extract_deliveries("likp_dashboard.csv", "likp_deliveries.csv")
     print('7')
-    extract_zorf_huto_link_vl06f()
+    extract_zorf_huto_link("ZORF_HU_TO_LINK", "vl06f_deliveries.csv", "zorf_hu_to_link_vl06f")
     print('8')
-    extract_zorf_huto_link_likp()
+    extract_zorf_huto_link("ZORF_HU_TO_LINK", "likp_deliveries.csv", "zorf_hu_to_link_likp")
     print('9')
-    convert_zorf_huto_link_for_dashboard()
+    extract_zorf_huto_link("ZORF_HUTO_LNKHIS", "likp_deliveries.csv", "zorf_huto_lnkhis_likp")
     print('10')
-    extract_to_number_from_zorf_huto_link_for_dashboard()
+    convert_zorf_huto_link_for_dashboard()
     print('11')
-    extract_ltap_from_to_numbers("hu_to_link_likp_to_numbers.csv", "ltap_likp_to_numbers")
+    extract_to_number_from_zorf_huto_link_for_dashboard()
     print('12')
-    extract_ltap_from_to_numbers("hu_to_link_vl06f_to_numbers.csv", "ltap_vl06f_to_numbers")
+    extract_ltap_from_to_numbers("hu_to_link_likp_to_numbers.csv", "ltap_likp_to_numbers")
     print('13')
-    extract_ltap_from_to_numbers("huto_lnkhis_likp_to_numbers.csv", "ltap_likp_to_numbers_two")
+    extract_ltap_from_to_numbers("hu_to_link_vl06f_to_numbers.csv", "ltap_vl06f_to_numbers")
     print('14')
-    extract_ltap_from_to_numbers("huto_lnkhis_vl06f_to_numbers.csv", "ltap_vl06f_to_numbers_two")
+    extract_ltap_from_to_numbers("huto_lnkhis_likp_to_numbers.csv", "ltap_likp_to_numbers_two")
     print('15')
     convert_ltap_to_numbers()
     print('16')
@@ -1118,5 +1015,5 @@ if __name__ == "__main__":
     create_hu_all_floors_pgi()
     print('21')
     create_lines_all_floors_pgi()
-    print('22')"""
+    print('22')
     create_picking_hourly_dashboard()

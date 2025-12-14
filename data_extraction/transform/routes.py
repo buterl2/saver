@@ -1,6 +1,7 @@
 import data_extraction.config.config as config
 import pandas as pd
+from typing import Any
 
-def transform_routes(): 
+def transform_routes() -> None: 
     df = pd.read_excel(f"{config.OUTPUT_PATH}routes.xlsx")
     df.to_csv(f"{config.OUTPUT_PATH}routes.csv", index=False) 

@@ -1,7 +1,8 @@
 from data_extraction.utils.sapsession import SAPSession
 from data_extraction.utils import default_logger as logger
+from typing import Any
 
-def recover_from_error():
+def recover_from_error() -> None:
     try:
         recover = SAPSession()
         for i in range(3):

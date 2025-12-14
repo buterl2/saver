@@ -1,22 +1,23 @@
 import win32com.client
 import data_extraction.config.config as config
 from data_extraction.utils import default_logger as logger
+from typing import Any, List, Tuple
 
 class SAPSession():
-    def __init__(self, session=0, connection=0):
+    def __init__(self, session: int = 0, connection: int = 0) -> None:
         sap_gui = win32com.client.GetObject("SAPGUI")
         application = sap_gui.GetScriptingEngine
         self.connection = application.Children(connection)
         self.session = self.connection.Children(session)
     
-    def __getattr__(self, name):
+    def __getattr__(self, name: str) -> Any:
         return getattr(self.session, name)
     
-    def enter_table(self, table_name):
+    def enter_table(self, table_name: str) -> None:
         self.findById("wnd[0]/usr/ctxtP_TAB").text = table_name
         self.findById("wnd[0]/tbar[1]/btn[8]").press()
     
-    def checkbox_selection(self, selection):
+    def checkbox_selection(self, selection: List[Tuple[int, List[int]]]) -> None:
         self.findById("wnd[0]/mbar/menu[3]/menu[2]").select()
         vertical_scroll = 0
         for scroll_element, checkbox_column in selection:
@@ -28,7 +29,7 @@ class SAPSession():
                 self.findById(f"wnd[1]/usr/chk[2,{col}]").selected = True
         self.findById("wnd[1]/tbar[0]/btn[0]").press()
 
-    def save_to_folder(self, filename):
+    def save_to_folder(self, filename: str) -> None:
         self.findById("wnd[0]/tbar[1]/btn[45]").press()
         self.findById("wnd[1]/usr/subSUBSCREEN_STEPLOOP:SAPLSPO5:0150/sub:SAPLSPO5:0150/radSPOPLI-SELFLAG[1,0]").select()
         self.findById("wnd[1]/usr/subSUBSCREEN_STEPLOOP:SAPLSPO5:0150/sub:SAPLSPO5:0150/radSPOPLI-SELFLAG[1,0]").setFocus()
@@ -39,7 +40,7 @@ class SAPSession():
         self.findById("wnd[1]/usr/ctxtDY_FILENAME").caretPosition = 8
         self.findById("wnd[1]/tbar[0]/btn[11]").press()
 
-    def vl06f_dashboard(self, variant_name):
+    def vl06f_dashboard(self, variant_name: str) -> None:
         self.findById("wnd[0]/tbar[1]/btn[17]").press()
         self.findById("wnd[1]/usr/txtENAME-LOW").text = variant_name
         self.findById("wnd[1]/usr/txtENAME-LOW").caretPosition = 7
@@ -56,7 +57,7 @@ class SAPSession():
         self.findById("wnd[0]/usr/cntlGRID1/shellcont/shell").selectColumn("WADAT")
         self.findById("wnd[0]/tbar[1]/btn[40]").press()
 
-    def get_variant_name(self, variant_name):
+    def get_variant_name(self, variant_name: str) -> None:
         self.findById("wnd[0]/tbar[1]/btn[17]").press()
         self.findById("wnd[1]/usr/txtV-LOW").text = variant_name
         self.findById("wnd[1]/usr/txtENAME-LOW").text = ""

@@ -8,8 +8,9 @@ import pandas as pd
 from collections import defaultdict
 from data_extraction.utils.keep_alive import keep_alive
 from data_extraction.utils.retry import retry
+from typing import Tuple, Dict, Any, List, Union
 
-def extract_ltap_for_productivity():
+def extract_ltap_for_productivity() -> None:
     # Today's date
     today = datetime.now().strftime("%d.%m.%Y")
     
@@ -21,19 +22,19 @@ def extract_ltap_for_productivity():
     extractor.enter_table("LTAP")
     extractor.checkbox_selection(config.LTAP_CHECKBOX_SELECTIONS)
     extractor.findById("wnd[0]/usr/ctxtI1-LOW").text = config.WAREHOUSE
-    extractor.findById("wnd[0]/usr/ctxtI7-LOW").text = '12.12.2025' # CHANGEBACK
+    extractor.findById("wnd[0]/usr/ctxtI7-LOW").text = today
     extractor.findById("wnd[0]/tbar[1]/btn[8]").press()
 
     # Save to folder
     extractor.save_to_folder("picking_productivity_ltap")
 
-def extract_hu_to_link_for_productivity():
+def extract_hu_to_link_for_productivity(transaction: str, filename: str) -> None:
     # Initialize SAP
     extractor = SAPSession()
 
     # Start transaction & configure it
     extractor.StartTransaction("Z_TABU_DIS")
-    extractor.enter_table("ZORF_HU_TO_LINK")
+    extractor.enter_table(transaction)
     extractor.checkbox_selection(config.HUTOLINK_CHECKBOX_SELECTIONS)
     extractor.findById('wnd[0]/usr/ctxtI1-LOW').text = config.WAREHOUSE
     extractor.findById("wnd[0]/usr/btn%_I5_%_APP_%-VALU_PUSH").press()
@@ -45,25 +46,9 @@ def extract_hu_to_link_for_productivity():
     extractor.findById("wnd[0]/tbar[1]/btn[8]").press()
 
     # Save to folder
-    extractor.save_to_folder("picking_productivity_hu_to_link")
+    extractor.save_to_folder(filename)
 
-    # Start transaction & configure it
-    extractor.StartTransaction("Z_TABU_DIS")
-    extractor.enter_table("ZORF_HUTO_LNKHIS")
-    extractor.checkbox_selection(config.HUTOLINK_CHECKBOX_SELECTIONS)
-    extractor.findById('wnd[0]/usr/ctxtI1-LOW').text = config.WAREHOUSE
-    extractor.findById("wnd[0]/usr/btn%_I5_%_APP_%-VALU_PUSH").press()
-    extractor.findById("wnd[1]/tbar[0]/btn[23]").press()
-    extractor.findById("wnd[2]/usr/ctxtDY_PATH").text = config.OUTPUT_PATH
-    extractor.findById("wnd[2]/usr/ctxtDY_FILENAME").text = "picking_productivity_deliveries.csv"
-    extractor.findById("wnd[2]/tbar[0]/btn[0]").press()
-    extractor.findById("wnd[1]/tbar[0]/btn[8]").press()
-    extractor.findById("wnd[0]/tbar[1]/btn[8]").press()
-
-    # Save to folder
-    extractor.save_to_folder("picking_productivity_huto_lnkhis")
-
-def extract_cdhdr_for_productivity():
+def extract_cdhdr_for_productivity() -> None:
     # Today's date
     today = datetime.now().strftime("%d.%m.%Y")
 
@@ -74,7 +59,7 @@ def extract_cdhdr_for_productivity():
     extractor.StartTransaction("Z_TABU_DIS")
     extractor.enter_table("CDHDR")
     extractor.checkbox_selection(config.CDHDR_CHECKBOX_SELECTIONS)
-    extractor.findById('wnd[0]/usr/ctxtI5-LOW').text = '12.12.2025' # CHANGEBACK
+    extractor.findById('wnd[0]/usr/ctxtI5-LOW').text = today
     extractor.findById("wnd[0]/usr/ctxtI7-LOW").text = "ZORF_BOX_CLOSING"
     extractor.findById("wnd[0]/usr/btn%_I4_%_APP_%-VALU_PUSH").press()
     extractor.findById("wnd[1]/tbar[0]/btn[23]").press()
@@ -87,7 +72,7 @@ def extract_cdhdr_for_productivity():
     # Save to folder
     extractor.save_to_folder("packing_productivity_cdhdr")
 
-def retrieve_deliveries_from_ltap():
+def retrieve_deliveries_from_ltap() -> None:
     convert_to_csv("picking_productivity_ltap")
     rename("picking_productivity_ltap", config.LTAP_DF)
 
@@ -97,19 +82,19 @@ def retrieve_deliveries_from_ltap():
     deliveries_df = ltap_df["delivery"].drop_duplicates()
     deliveries_df.to_csv(f"{config.OUTPUT_PATH}picking_productivity_deliveries.csv", index=False)
 
-def convert_hu_to_link_for_productivity():
+def convert_hu_to_link_for_productivity() -> None:
     convert_to_csv("picking_productivity_hu_to_link")
     convert_to_csv("picking_productivity_huto_lnkhis")
 
     rename("picking_productivity_hu_to_link", config.HU_TO_LINK_DF)
     rename("picking_productivity_huto_lnkhis", config.HU_TO_LINK_DF)
 
-def convert_cdhdr_for_productivity():
+def convert_cdhdr_for_productivity() -> None:
     convert_to_csv("packing_productivity_cdhdr")
 
     rename("packing_productivity_cdhdr", config.CDHDR_DF)
 
-def load_and_combine_hutolnk_routes():
+def load_and_combine_hutolnk_routes() -> pd.DataFrame:
     hu_to_link = pd.read_csv(f"{config.OUTPUT_PATH}picking_productivity_hu_to_link.csv")
     huto_lnkhis = pd.read_csv(f"{config.OUTPUT_PATH}picking_productivity_huto_lnkhis.csv")
     routes = pd.read_csv(f"{config.OUTPUT_PATH}routes.csv")
@@ -120,7 +105,7 @@ def load_and_combine_hutolnk_routes():
 
     return combined
 
-def load_and_combine_cdhdr_users():
+def load_and_combine_cdhdr_users() -> pd.DataFrame:
     cdhdr = pd.read_csv(f"{config.OUTPUT_PATH}packing_productivity_cdhdr.csv")
     users = pd.read_csv(f"{config.OUTPUT_PATH}users_floor.csv")
 
@@ -129,8 +114,8 @@ def load_and_combine_cdhdr_users():
 
     return combined
 
-def prepare_ltap_data(combined):
-    ltap = pd.read_csv(f"{config.OUTPUT_PATH}picking_productivity_ltap.csv")
+def prepare_ltap_data(combined: pd.DataFrame, floor_mapping: Dict[str, str]) -> pd.DataFrame:
+    ltap: pd.DataFrame = pd.read_csv(f"{config.OUTPUT_PATH}picking_productivity_ltap.csv")
     ltap["actual_quantity"] = pd.to_numeric(ltap["actual_quantity"], errors="coerce").fillna(0).astype(int)
     ltap["delivery"] = ltap["delivery"].fillna(0).astype(int)
 
@@ -142,12 +127,12 @@ def prepare_ltap_data(combined):
 
     # Transformations
     ltap["flow"] = ltap["flow"].replace("y2", "a_flow")
-    ltap["floor"] = ltap["picking_area"].map(FLOOR_MAPPING)
+    ltap["floor"] = ltap["picking_area"].map(floor_mapping)
     ltap["hour"] = ltap["confirmation_time"].str.slice(0, 2)
 
     return ltap
 
-def prepare_cdhdr_data(combined):
+def prepare_cdhdr_data(combined: pd.DataFrame) -> pd.DataFrame:
     combined["datetime"] = pd.to_datetime(combined["date"] + " " + combined["time"], format="%d.%m.%Y %H:%M:%S", errors="coerce")
     combined["datetime"] += pd.DateOffset(hours=1)
     combined["hour"] = combined["datetime"].dt.strftime("%H")
@@ -155,7 +140,7 @@ def prepare_cdhdr_data(combined):
 
     return combined
 
-def get_productivity_color(value, thresholds):
+def get_productivity_color(value: float, thresholds: List[int]) -> str:
     if value < thresholds[0]:
         return "red"
     elif value < thresholds[1]:
@@ -165,7 +150,7 @@ def get_productivity_color(value, thresholds):
     else:
         return "purple"
 
-def calculate_picking_hourly_productivity(ltap):
+def calculate_picking_hourly_productivity(ltap: pd.DataFrame) -> Tuple[Dict[str, Dict[str, Dict[str, Dict[str, Any]]]], Dict[str, Dict[str, Dict[str, int]]]]:
     lines_per_hour = ltap.groupby(["user", "floor", "flow", "hour"]).size()
 
     nested_dict = defaultdict(lambda: defaultdict(lambda: defaultdict(dict)))
@@ -191,7 +176,7 @@ def calculate_picking_hourly_productivity(ltap):
 
     return nested_dict, total_hours
 
-def calculate_hourly_packing_productivity(cdhdr):
+def calculate_hourly_packing_productivity(cdhdr: pd.DataFrame) -> Tuple[Dict[str, Dict[str, Dict[str, Any]]], Dict[str, Dict[str, int]]]:
     packing_per_hour = cdhdr.groupby(["user", "floor", "hour"]).size()
 
     nested_dict = defaultdict(lambda: defaultdict(dict))
@@ -217,7 +202,7 @@ def calculate_hourly_packing_productivity(cdhdr):
     
     return nested_dict, total_hours
 
-def calculate_picking_aggregate_metrics(ltap, nested_dict, total_hours, lines_per_user):
+def calculate_picking_aggregate_metrics(ltap: pd.DataFrame, nested_dict: Dict[str, Dict[str, Dict[str, Any]]], total_hours: Dict[str, Dict[str, Dict[str, int]]], lines_per_user: pd.Series) -> None:
     for (user, floor, flow), lines_picked in lines_per_user.items():
         hours_worked = total_hours[user][floor][flow]
         productivity = lines_picked / hours_worked if hours_worked > 0 else 0
@@ -239,7 +224,7 @@ def calculate_picking_aggregate_metrics(ltap, nested_dict, total_hours, lines_pe
         nested_dict[user][floor][flow]["lines_picked"] = int(lines_picked)
         nested_dict[user][floor][flow]["ratio"] = round(ratio, 2)
 
-def calculate_packing_aggregate_metrics(nested_dict, total_hours, packing_per_user):
+def calculate_packing_aggregate_metrics(nested_dict: Dict[str, Dict[str, Dict[str, Any]]], total_hours: Dict[str, Dict[str, int]], packing_per_user: pd.Series) -> None:
     for (user, floor), boxes_packed in packing_per_user.items():
         hours_worked = total_hours[user][floor]
         productivity = boxes_packed / hours_worked if hours_worked > 0 else 0
@@ -263,7 +248,8 @@ if __name__ == "__main__":
             retry(transform_routes)
             retry(extract_ltap_for_productivity)
             retry(retrieve_deliveries_from_ltap)
-            retry(extract_hu_to_link_for_productivity)
+            extract_hu_to_link_for_productivity("ZORF_HU_TO_LINK", "picking_productivity_hu_to_link")
+            extract_hu_to_link_for_productivity("ZORF_HUTO_LNKHIS", "picking_productivity_huto_lnkhis")
             retry(extract_cdhdr_for_productivity)
             retry(convert_hu_to_link_for_productivity)
             
@@ -271,10 +257,10 @@ if __name__ == "__main__":
             combined = retry(load_and_combine_hutolnk_routes)
 
             # Get floor mapping
-            FLOOR_MAPPING = {area: floor for floor, areas in config.FLOORS.items() for area in areas}
+            FLOOR_MAPPING: Dict[str, str] = {area: floor for floor, areas in config.FLOORS.items() for area in areas}
 
             # Prepare LTAP data
-            ltap = prepare_ltap_data(combined)
+            ltap = prepare_ltap_data(combined, FLOOR_MAPPING)
 
             # Calculate grouped metrics
             lines_per_user = ltap.groupby(["user", "floor", "flow"]).size()

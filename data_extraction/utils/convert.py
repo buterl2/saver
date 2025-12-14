@@ -2,8 +2,9 @@ import pandas as pd
 import data_extraction.config.config as config
 import json
 from data_extraction.utils import default_logger as logger
+from typing import Any, Optional, Dict
 
-def convert_to_csv(filename, dtype=None):
+def convert_to_csv(filename: str, dtype: Optional[Dict[str, str]] = None) -> pd.DataFrame:
     """
     Convert a tab-separated text file to CSV format.
     
@@ -32,6 +33,6 @@ def convert_to_csv(filename, dtype=None):
     
     raise ValueError("Could not decode file with any standard encoding")
 
-def convert_to_json(filename, dictionary):
+def convert_to_json(filename: str, dictionary: Dict[str, Any]) -> None:
     with open(f"{config.OUTPUT_PATH}{filename}.json", "w") as f:
         json.dump(dictionary, f, indent=4)

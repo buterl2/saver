@@ -2,8 +2,9 @@ import logging
 import os
 from datetime import datetime
 from pathlib import Path
+from typing import Optional, Union
 
-def setup_logger(name=__name__, log_file=None, log_level=logging.INFO):
+def setup_logger(name: str = __name__, log_file: Optional[Union[str, Path]] = None, log_level: int = logging.INFO) -> logging.Logger:
     # CREATE LOGGER
     logger = logging.getLogger(name)
     logger.setLevel(log_level)
