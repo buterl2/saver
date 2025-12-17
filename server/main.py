@@ -1,4 +1,7 @@
-from data_extraction.utils import default_logger as logger
+from data_script.utils.logger import setup_logger
+
+# Set up logger
+logger = setup_logger("main")
 import copy
 import math
 from typing import Dict, Any, List, Set, Union

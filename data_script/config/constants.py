@@ -1,13 +1,35 @@
 from pathlib import Path
 import os
 from dotenv import load_dotenv
+from datetime import datetime
+import logging
 
+# Get the project root and path to data
 project_root = Path(__file__).parent.parent.parent
 env_path = project_root / ".env"
 load_dotenv(dotenv_path=env_path, override=True)
 
+def get_output_path() -> str:
+    env_path = os.getenv("PATH_TO_DATA_SCRIPT")
+    if env_path:
+        path = Path(env_path)
+    else:
+        path = project_root / "data_script" / "data"
+
+    path.mkdir(parents=True, exist_ok=True)
+
+    path_str = str(path.resolve()).replace("\\", "/")
+
+    if not path_str.endswith("/"):
+        path_str += "/"
+
+    return path_str
+
+# OUTPUT PATH
+OUTPUT_PATH = get_output_path()
+
 # CHECKBOX SELECTIONS
-LTAP_CHECKBOX_SELECTIONS = [
+LTAP_CHECKBOX = [
     (5, [0, 1, 2, 5, 6, 7]),
     (21, [4, 6, 18, 19, 20]),
     (20, [13, 14, 15, 17]),
@@ -18,15 +40,17 @@ LTAP_CHECKBOX_SELECTIONS = [
     (9, [17]),
     (17, [16, 17])
 ]
-HUTOLINK_CHECKBOX_SELECTIONS = [
-    (5, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 21]),
-    (14, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20])
-]
-CDHDR_CHECKBOX_SELECTIONS = [
+
+CDHDR_CHECKBOX = [
     (0, [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 17, 18])
 ]
 
-LIKP_CHECKBOX_SELECTIONS = [
+HUTOLINK_CHECKBOX = [
+    (5, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 21]),
+    (14, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20])
+]
+
+LIKP_CHECKBOX = [
     (5, [0, 5, 6, 7, 10, 20]),
     (20, []),
     (20, []),
@@ -41,10 +65,11 @@ LTAP_DF = {
     'Conf.t.': 'confirmation_time', 'Material': 'material', 'Dest. Bin': 'destination_bin', 'Delivery': 'delivery', 
     'Batch': 'batch'
 }
-HU_TO_LINK_DF = {
+HUTOLINK_DF = {
     'Document': 'document',
     'Route': 'route'
 }
+
 CDHDR_DF = {
     'Object': 'object',
     'Object Value': 'object_value',
@@ -54,6 +79,7 @@ CDHDR_DF = {
     'Time': 'time',
     'TCode': 'transaction_code'
 }
+
 VL06F_DF = {
     'GI Time': 'gi_time',
     'No.Pk': 'no_pk',
@@ -94,7 +120,7 @@ LTAP_DASHBOARD_DF = {
     'TO Number': 'to_number'
 }
 
-ZORF_HUTO_LINK_DASHBOARD_DF = {
+HUTOLINK_DASHBOARD_DF = {
     'Document': 'delivery',
     'Route': 'route',
     'TO Number': 'to_number',
@@ -103,7 +129,15 @@ ZORF_HUTO_LINK_DASHBOARD_DF = {
     'Source Bin': 'source_bin'
 }
 
-# MISCS
+# GENERAL
+WAREHOUSE = 266
+
+# MISC
+ENCODING_SAP = 1100
+ENCODING_LOGGER = 'utf-8'
+MAX_RETRIES = 10
+WAIT_SECONDS = 3.0
+DEBUG_LEVEL = logging.DEBUG
 FLOORS = {
     "ground_floor": ["3.L", "1.L", "2.L", "0.L", "0.C", "PA1", "PA5"],
     "first_floor": ["1.4", "1.1", "1.3", "1.2", "1.5", "2.N"],
@@ -124,36 +158,16 @@ PRODUCTIVITY_THRESHOLDS = {
     "first_floor": [50, 60, 70],
     "second_floor": [50, 60, 70]
 }
-
 PACKING_THRESHOLDS = {
     "ground_floor": [27, 33, 35],
     "first_floor": [35, 45, 50],
     "second_floor": [35, 40, 50]
 }
 
-# GENERAL
-WAREHOUSE = 266
-ENCODING = 1100
-MAX_RETRIES = 10
-WAIT_SECONDS = 2
+# DASHBOARD
 VARIANT_VL06F_DASHBOARD = 'SIHARM2'
-VARIANT_NAME = 'MAC'
 
-def get_output_path() -> str:
-    env_path = os.getenv("PATH_TO_DATA")
-    if env_path:
-        path = Path(env_path)
-    else:
-        path = project_root / "data_extraction" / "data"
-
-    path.mkdir(parents=True, exist_ok=True)
-
-    path_str = str(path.resolve()).replace("\\", "/")
-
-    if not path_str.endswith("/"):
-        path_str += "/"
-
-    return path_str
-
-# OUTPUT PATH
-OUTPUT_PATH = get_output_path()
+# Date function
+def get_today() -> str:
+    """Get today's date in DD.MM.YYYY format"""
+    return datetime.now().strftime("%d.%m.%Y")

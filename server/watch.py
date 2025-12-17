@@ -1,11 +1,14 @@
 import os
 import json
-from data_extraction.utils import default_logger as logger
+from data_script.utils.logger import setup_logger
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 import time
 import pandas as pd
 from server.config import settings
+
+# Set up logger
+logger = setup_logger("watch")
 
 class WatchFiles:
     def __init__(self):
@@ -20,17 +23,17 @@ class WatchFiles:
             logger.error(f"Data folder does not exists: {self.data_folder_path}")
             raise ValueError(f"Data folder does not exist: {self.data_folder_path}")
         
-        # SET UP FILE PATHS
-        self.cdhdr_data_path = os.path.join(self.data_folder_path, "total_per_floor_packs_per_hour.json")
-        self.ltap_data_path = os.path.join(self.data_folder_path, "total_per_floor_per_flow_picks_per_hour.json")
-        self.deliveries_dashboard_data_path = os.path.join(self.data_folder_path, "deliveries_all_floors.json")
-        self.hu_dashboard_data_path = os.path.join(self.data_folder_path, "hu_all_floors.json")
-        self.lines_dashboard_data_path = os.path.join(self.data_folder_path, "lines_all_floors.json")
-        self.deliveries_pgi_dashboard_data_path = os.path.join(self.data_folder_path, "deliveries_all_floors_pgi.json")
-        self.hu_pgi_dashboard_data_path = os.path.join(self.data_folder_path, "hu_all_floors_pgi.json")
-        self.lines_pgi_dashboard_data_path = os.path.join(self.data_folder_path, "lines_all_floors_pgi.json")
-        self.lines_hourly_dashboard_data_path = os.path.join(self.data_folder_path, "picking_hourly_dashboard.json")
-        self.users_name_path = os.path.join(self.data_folder_path, "users_name.csv")
+        # SET UP FILE PATHS (updated to match data_script structure)
+        self.cdhdr_data_path = os.path.join(self.data_folder_path, "packing", "packing.json")
+        self.ltap_data_path = os.path.join(self.data_folder_path, "picking", "picking.json")
+        self.deliveries_dashboard_data_path = os.path.join(self.data_folder_path, "dashboard", "deliveries_all_floors.json")
+        self.hu_dashboard_data_path = os.path.join(self.data_folder_path, "dashboard", "hu_all_floors.json")
+        self.lines_dashboard_data_path = os.path.join(self.data_folder_path, "dashboard", "lines_all_floors.json")
+        self.deliveries_pgi_dashboard_data_path = os.path.join(self.data_folder_path, "dashboard", "deliveries_all_floors_pgi.json")
+        self.hu_pgi_dashboard_data_path = os.path.join(self.data_folder_path, "dashboard", "hu_all_floors_pgi.json")
+        self.lines_pgi_dashboard_data_path = os.path.join(self.data_folder_path, "dashboard", "lines_all_floors_pgi.json")
+        self.lines_hourly_dashboard_data_path = os.path.join(self.data_folder_path, "dashboard", "picking_hourly_dashboard.json")
+        self.users_name_path = os.path.join(self.data_folder_path, "misc", "users_name.csv")
 
         # INITIALIZE DATA STORAGE
         self.users_name = {}
@@ -187,9 +190,10 @@ class WatchFiles:
         try:
             event_handler = self.FileChangeHandler(self)
             self.observer = Observer()
-            self.observer.schedule(event_handler, self.data_folder_path, recursive=False)
+            # Watch recursively since files are now in subdirectories (packing/, picking/, dashboard/, misc/)
+            self.observer.schedule(event_handler, self.data_folder_path, recursive=True)
             self.observer.start()
-            logger.info(f"Started watching data folder: {self.data_folder_path}")
+            logger.info(f"Started watching data folder (recursive): {self.data_folder_path}")
         except Exception as e:
             logger.error(f"Error starting file watcher: {e}", exc_info=True)
             raise
@@ -201,34 +205,37 @@ class WatchFiles:
 
         def on_modified(self, event):
             try:
-                if event.src_path == self.watcher.cdhdr_data_path:
+                # Normalize paths for comparison (handle Windows backslashes)
+                event_path = os.path.normpath(event.src_path)
+                
+                if event_path == os.path.normpath(self.watcher.cdhdr_data_path):
                     logger.info("CDHDR file modified, reloading...")
                     self.watcher.load_cdhdr()
-                elif event.src_path == self.watcher.ltap_data_path:
+                elif event_path == os.path.normpath(self.watcher.ltap_data_path):
                     logger.info("LTAP file modified, reloading...")
                     self.watcher.load_ltap()
-                elif event.src_path == self.watcher.deliveries_dashboard_data_path:
+                elif event_path == os.path.normpath(self.watcher.deliveries_dashboard_data_path):
                     logger.info("DELIVERIES DASHBOARD file modified, reloading...")
                     self.watcher.load_deliveries_dashboard()
-                elif event.src_path == self.watcher.hu_dashboard_data_path:
+                elif event_path == os.path.normpath(self.watcher.hu_dashboard_data_path):
                     logger.info("HU DASHBOARD file modified, reloading...")
                     self.watcher.load_hu_dashboard()
-                elif event.src_path == self.watcher.lines_dashboard_data_path:
+                elif event_path == os.path.normpath(self.watcher.lines_dashboard_data_path):
                     logger.info("LINES DASHBOARD file modified, reloading...")
                     self.watcher.load_lines_dashboard()
-                elif event.src_path == self.watcher.deliveries_pgi_dashboard_data_path:
+                elif event_path == os.path.normpath(self.watcher.deliveries_pgi_dashboard_data_path):
                     logger.info("DELIVERIES PGI DASHBOARD file modified, reloading...")
                     self.watcher.load_deliveries_pgi_dashboard()
-                elif event.src_path == self.watcher.hu_pgi_dashboard_data_path:
+                elif event_path == os.path.normpath(self.watcher.hu_pgi_dashboard_data_path):
                     logger.info("HU PGI DASHBOARD file modified, reloading...")
                     self.watcher.load_hu_pgi_dashboard()
-                elif event.src_path == self.watcher.lines_pgi_dashboard_data_path:
+                elif event_path == os.path.normpath(self.watcher.lines_pgi_dashboard_data_path):
                     logger.info("LINES PGI DASHBOARD file modified, reloading...")
                     self.watcher.load_lines_pgi_dashboard()
-                elif event.src_path == self.watcher.lines_hourly_dashboard_data_path:
+                elif event_path == os.path.normpath(self.watcher.lines_hourly_dashboard_data_path):
                     logger.info("LINES HOURLY DASHBOARD file modified, reloading...")
                     self.watcher.load_lines_hourly_dashboard()
-                elif event.src_path == self.watcher.users_name_path:
+                elif event_path == os.path.normpath(self.watcher.users_name_path):
                     logger.info("User names file modified, reloading...")
                     self.watcher.load_users_name()
             except Exception as e:

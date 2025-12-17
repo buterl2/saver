@@ -1,6 +1,9 @@
 import socket
-from data_extraction.utils import default_logger as logger
+from data_script.utils.logger import setup_logger
 from .config import settings
+
+# Set up logger
+logger = setup_logger("barcode_printer")
 
 def generate_zpl_command(username, password):
     data = username + "\t" + password
